@@ -262,5 +262,43 @@ namespace ServiceStack.TeamCityClient.Types
         public string Href { get; set; }
     }
 
+    [DataContract]
+    public class Role
+    {
+        [DataMember(Name = "roleId")]
+        public string RoleId { get; set; }
+        [DataMember(Name = "scope")]
+        public string Scope { get; set; }
+        [DataMember(Name = "href")]
+        public string Href { get; set; }
+    }
 
+    [DataContract]
+    public class RolesResponse
+    {
+        [DataMember(Name = "role")]
+        public List<Role> Roles { get; set; }
+    }
+
+    [DataContract]
+    public class Group
+    {
+        [DataMember(Name  = "key")]
+        public string Key { get; set; }
+        [DataMember(Name  = "name")]
+        public string Name { get; set; }
+        [DataMember(Name  = "href")]
+        public string Href { get; set; }
+        [DataMember(Name  = "description")]
+        public string Description { get; set; }
+    }
+
+    [DataContract]
+    public class GroupsResponse
+    {
+        [DataMember(Name = "count")]
+        public int Count { get; set; }
+        [DataMember(Name = "group")]
+        public List<Group> Groups { get; set; }
+    }
 }

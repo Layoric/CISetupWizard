@@ -10,12 +10,12 @@ namespace ServiceStack.TeamCity.Tests
     [TestFixture]
     public class TeamCityClientTests
     {
-        private readonly JsonServiceClient _client = new JsonServiceClient("http://localhost:8484/app/rest")
+        public readonly JsonServiceClient Client = new JsonServiceClient("http://localhost:8484/app/rest")
         {
             StoreCookies = true
         };
 
-        private IAppSettings Settings;
+        public readonly IAppSettings Settings;
         public TeamCityClientTests()
         {
             var fileInfo = new FileInfo("../../appsettings.txt");
@@ -24,8 +24,8 @@ namespace ServiceStack.TeamCity.Tests
                 throw new FileNotFoundException("Missing appsettings file that provides TeamCity credentials");
             }
             Settings = new TextFileSettings("../../appsettings.txt");
-            _client.UserName = Settings.GetString("UserName");
-            _client.Password = Settings.GetString("Password");
+            Client.UserName = Settings.GetString("UserName");
+            Client.Password = Settings.GetString("Password");
         }
 
         [Test]
@@ -34,7 +34,7 @@ namespace ServiceStack.TeamCity.Tests
             HttpWebResponse response = null;
             try
             {
-                response = _client.Get("/projects");
+                response = Client.Get("/projects");
             }
             catch (Exception)
             {
@@ -48,7 +48,7 @@ namespace ServiceStack.TeamCity.Tests
         [Test]
         public void CanGetProjects()
         {
-            var getProjectsResponse = _client.Get(new GetProjects());
+            var getProjectsResponse = Client.Get(new GetProjects());
             Assert.That(getProjectsResponse, Is.Not.Null);
             Assert.That(getProjectsResponse.Count, Is.GreaterThan(0));
             Assert.That(getProjectsResponse.Projects, Is.Not.Null);
@@ -61,7 +61,7 @@ namespace ServiceStack.TeamCity.Tests
         [Test]
         public void CanGetRootProject()
         {
-            var getProjectResponse = _client.Get(new GetProject { ProjectLocator = "id:_Root" });
+            var getProjectResponse = Client.Get(new GetProject { ProjectLocator = "id:_Root" });
             Assert.That(getProjectResponse, Is.Not.Null);
             Assert.That(getProjectResponse.Id, Is.EqualTo("_Root"));
             Assert.That(getProjectResponse.Name, Is.Not.Null);
@@ -72,7 +72,7 @@ namespace ServiceStack.TeamCity.Tests
         [Test]
         public void CanGetVcsRoots()
         {
-            var getVcsRoots = _client.Get(new GetVcsRoots());
+            var getVcsRoots = Client.Get(new GetVcsRoots());
             Assert.That(getVcsRoots, Is.Not.Null);
             Assert.That(getVcsRoots.Count, Is.GreaterThan(0));
             Assert.That(getVcsRoots.Href, Is.Not.Null);
@@ -83,7 +83,7 @@ namespace ServiceStack.TeamCity.Tests
         [Test]
         public void CanGetBuilds()
         {
-            var getBuilds = _client.Get(new GetBuilds());
+            var getBuilds = Client.Get(new GetBuilds());
             Assert.That(getBuilds, Is.Not.Null);
             Assert.That(getBuilds.Count, Is.GreaterThan(0));
             Assert.That(getBuilds.Href, Is.Not.Null);
@@ -94,7 +94,7 @@ namespace ServiceStack.TeamCity.Tests
         [Test]
         public void CanGetSingleBuild()
         {
-            var getBuild = _client.Get(new GetBuild { BuildLocator = "number:9" });
+            var getBuild = Client.Get(new GetBuild { BuildLocator = "number:9" });
             Assert.That(getBuild, Is.Not.Null);
             Assert.That(getBuild.Triggered, Is.Not.Null);
             Assert.That(getBuild.Agent, Is.Not.Null);
@@ -121,11 +121,20 @@ namespace ServiceStack.TeamCity.Tests
         [Test]
         public void CanGetUsers()
         {
-            var getUsers = _client.Get(new GetUsers());
+            var getUsers = Client.Get(new GetUsers());
             Assert.That(getUsers, Is.Not.Null);
             Assert.That(getUsers.Count, Is.GreaterThan(0));
             Assert.That(getUsers.Users, Is.Not.Null);
             Assert.That(getUsers.Users.Count, Is.EqualTo(getUsers.Count));
+        }
+
+        [Test]
+        public void CanGetUser()
+        {
+            var getUser = Client.Get(new GetUser {UserLocator = "username:" + Settings.GetString("UserName")});
+            Assert.That(getUser, Is.Not.Null);
+            Assert.That(getUser, Is.Not.Null);
+            Assert.That(getUser, Is.Not.Null);
         }
     }
 }
