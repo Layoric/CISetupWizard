@@ -1,9 +1,15 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Runtime.Serialization;
+using System.ServiceModel;
+using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Serialization;
 using NUnit.Framework;
 using ServiceStack.Configuration;
 using ServiceStack.TeamCityClient;
+using XmlSerializer = ServiceStack.Text.XmlSerializer;
 
 namespace ServiceStack.TeamCity.Tests
 {
@@ -105,7 +111,7 @@ namespace ServiceStack.TeamCity.Tests
             Assert.That(getBuild.FinishDate, Is.Not.Null);
             Assert.That(getBuild.Href, Is.Not.Null);
             Assert.That(getBuild.Id, Is.Not.Null);
-            Assert.That(getBuild.LastChanges, Is.Not.Null);
+            Assert.That(getBuild.LastChangesResponse, Is.Not.Null);
             Assert.That(getBuild.Number, Is.Not.Null);
             Assert.That(getBuild.Properties, Is.Not.Null);
             Assert.That(getBuild.QueuedDate, Is.Not.Null);
@@ -133,8 +139,87 @@ namespace ServiceStack.TeamCity.Tests
         {
             var getUser = Client.Get(new GetUser {UserLocator = "username:" + Settings.GetString("UserName")});
             Assert.That(getUser, Is.Not.Null);
-            Assert.That(getUser, Is.Not.Null);
-            Assert.That(getUser, Is.Not.Null);
+            Assert.That(getUser.Name, Is.Not.Null);
+            Assert.That(getUser.Id, Is.Not.Null);
+            Assert.That(getUser.GroupDetails, Is.Not.Null);
+            Assert.That(getUser.Href, Is.Not.Null);
+            Assert.That(getUser.LastLogin, Is.Not.Null);
+            Assert.That(getUser.PropertyDetails, Is.Not.Null);
+            Assert.That(getUser.RoleDetails, Is.Not.Null);
+            Assert.That(getUser.Username, Is.Not.Null);
+            Assert.That(getUser.Username, Is.EqualTo(Settings.GetString("UserName")));
         }
+
+        [Test]
+        public void CanGetUserGroups()
+        {
+            var getGroups = Client.Get(new GetUserGroups());
+            Assert.That(getGroups, Is.Not.Null);
+            Assert.That(getGroups.Count, Is.GreaterThan(0));
+            Assert.That(getGroups.Groups, Is.Not.Null);
+            Assert.That(getGroups.Groups.Count, Is.EqualTo(getGroups.Count));
+        }
+
+        [Test]
+        public void CanGetUsersInGroup()
+        {
+            var getUsersInGroup = Client.Get(new GetUsersInGroup { GroupLocator = "key:ALL_USERS_GROUP"});
+            Assert.That(getUsersInGroup, Is.Not.Null);
+            Assert.That(getUsersInGroup.Name, Is.Not.Null);
+            Assert.That(getUsersInGroup.ChildGroupsResponse, Is.Not.Null);
+            Assert.That(getUsersInGroup.Description, Is.Not.Null);
+            Assert.That(getUsersInGroup.Href, Is.Not.Null);
+            Assert.That(getUsersInGroup.Key, Is.Not.Null);
+            Assert.That(getUsersInGroup.ParentGroupsResponse, Is.Not.Null);
+            Assert.That(getUsersInGroup.PropertiesResponse, Is.Not.Null);
+            Assert.That(getUsersInGroup.RolesResponse, Is.Not.Null);
+            Assert.That(getUsersInGroup.UsersResponse, Is.Not.Null);
+        }
+
+        [Test]
+        public void CanCreateProject()
+        {
+            XmlServiceClient serviceClient = new XmlServiceClient("http://localhost:8484/app/rest");
+            serviceClient.UserName = Client.UserName;
+            serviceClient.Password = Client.Password;
+            serviceClient.StoreCookies = true;
+            serviceClient.RequestFilter += request =>
+            {
+                Console.WriteLine("Fo1");
+            };
+            serviceClient.ResponseFilter += response =>
+            {
+                Console.WriteLine(response.ReadToEnd());
+            };
+            var req = new CreateProject {Name = "FooBar1"};
+            var rawReq = XmlSerializer.SerializeToString(req);
+
+            //Assert.That(createResponse, Is.Not.Null);
+        }
+    }
+
+    [Route("/projects")]
+    [DataContract(Name = "newProjectDescription", Namespace = "")]
+    [XmlSerializerFormat]
+    public class CreateProject : IReturn<CreateProjectResponse>
+    {
+        [DataMember(Name = "name")]
+        [XmlAttribute]
+        public string Name { get; set; }
+    }
+
+    public class CreateProjectResponse
+    {
+    }
+
+    [DataContract]
+    public class CreateBuildConfig
+    {
+        [DataMember(Name = "id")]
+        public string Id { get; set; }
+        [DataMember(Name = "name")]
+        public string Name { get; set; }
+        [DataMember(Name = "projectId")]
+        public string ProjectId { get; set; }
     }
 }

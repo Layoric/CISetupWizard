@@ -57,6 +57,7 @@
     <Compile Include="GetBuild.cs" />
     <Compile Include="GetProject.cs" />
     <Compile Include="GetUser.cs" />
+    <Compile Include="GetUserGroups.cs" />
     <Compile Include="GetVcsRoot.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Types\TeamCityApiTypes.cs" />

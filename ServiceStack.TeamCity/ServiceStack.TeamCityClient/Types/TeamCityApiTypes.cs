@@ -92,6 +92,15 @@ namespace ServiceStack.TeamCityClient.Types
     }
 
     [DataContract]
+    public class UsersResponse
+    {
+        [DataMember(Name = "count")]
+        public int Count { get; set; }
+        [DataMember(Name = "user")]
+        public List<User> Users { get; set; }
+    }
+
+    [DataContract]
     public class Build
     {
         [DataMember(Name = "id")]
@@ -162,10 +171,13 @@ namespace ServiceStack.TeamCityClient.Types
         public string Href { get; set; }
     }
 
-    public class LastChanges
+    [DataContract]
+    public class LastChangesResponse
     {
-        public int count { get; set; }
-        public List<Change> change { get; set; }
+        [DataMember(Name = "count")]
+        public int Count { get; set; }
+        [DataMember(Name = "change")]
+        public List<Change> Changes { get; set; }
     }
 
     [DataContract]
@@ -295,6 +307,24 @@ namespace ServiceStack.TeamCityClient.Types
 
     [DataContract]
     public class GroupsResponse
+    {
+        [DataMember(Name = "count")]
+        public int Count { get; set; }
+        [DataMember(Name = "group")]
+        public List<Group> Groups { get; set; }
+    }
+
+    [DataContract]
+    public class ParentGroupsResponse
+    {
+        [DataMember(Name = "count")]
+        public int Count { get; set; }
+        [DataMember(Name = "group")]
+        public List<Group> Groups { get; set; }
+    }
+
+    [DataContract]
+    public class ChildGroupsResponse
     {
         [DataMember(Name = "count")]
         public int Count { get; set; }

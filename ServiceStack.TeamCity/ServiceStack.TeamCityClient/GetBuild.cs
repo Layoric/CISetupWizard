@@ -60,7 +60,7 @@ namespace ServiceStack.TeamCityClient
         [DataMember(Name = "triggered")]
         public Triggered Triggered { get; set; }
         [DataMember(Name = "lastChanges")]
-        public LastChanges LastChanges { get; set; }
+        public LastChangesResponse LastChangesResponse { get; set; }
         [DataMember(Name = "changes")]
         public Changes Changes { get; set; }
         [DataMember(Name = "revisions")]
