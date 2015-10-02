@@ -7,7 +7,9 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using NUnit.Framework;
+using ServiceStack;
 using ServiceStack.Configuration;
+using ServiceStack.MiniProfiler;
 using ServiceStack.TeamCityClient;
 using XmlSerializer = ServiceStack.Text.XmlSerializer;
 
@@ -16,11 +18,7 @@ namespace ServiceStack.TeamCity.Tests
     [TestFixture]
     public class TeamCityClientTests
     {
-        public readonly JsonServiceClient Client = new JsonServiceClient("http://localhost:8484/app/rest")
-        {
-            StoreCookies = true
-        };
-
+        public TcClient Client;
         public readonly IAppSettings Settings;
         public TeamCityClientTests()
         {
@@ -30,8 +28,10 @@ namespace ServiceStack.TeamCity.Tests
                 throw new FileNotFoundException("Missing appsettings file that provides TeamCity credentials");
             }
             Settings = new TextFileSettings("../../appsettings.txt");
-            Client.UserName = Settings.GetString("UserName");
-            Client.Password = Settings.GetString("Password");
+            Client = new TcClient(
+                "http://localhost:8484/app/rest",
+                Settings.GetString("UserName"),
+                Settings.GetString("Password"));
         }
 
         [Test]
@@ -40,7 +40,7 @@ namespace ServiceStack.TeamCity.Tests
             HttpWebResponse response = null;
             try
             {
-                response = Client.Get("/projects");
+                response = Client.ServiceClient.Get("/projects");
             }
             catch (Exception)
             {
@@ -54,7 +54,7 @@ namespace ServiceStack.TeamCity.Tests
         [Test]
         public void CanGetProjects()
         {
-            var getProjectsResponse = Client.Get(new GetProjects());
+            var getProjectsResponse = Client.GetProjects();
             Assert.That(getProjectsResponse, Is.Not.Null);
             Assert.That(getProjectsResponse.Count, Is.GreaterThan(0));
             Assert.That(getProjectsResponse.Projects, Is.Not.Null);
@@ -67,7 +67,7 @@ namespace ServiceStack.TeamCity.Tests
         [Test]
         public void CanGetRootProject()
         {
-            var getProjectResponse = Client.Get(new GetProject { ProjectLocator = "id:_Root" });
+            var getProjectResponse = Client.GetProject("id:_Root");
             Assert.That(getProjectResponse, Is.Not.Null);
             Assert.That(getProjectResponse.Id, Is.EqualTo("_Root"));
             Assert.That(getProjectResponse.Name, Is.Not.Null);
@@ -78,7 +78,7 @@ namespace ServiceStack.TeamCity.Tests
         [Test]
         public void CanGetVcsRoots()
         {
-            var getVcsRoots = Client.Get(new GetVcsRoots());
+            var getVcsRoots = Client.GetVcsRoots();
             Assert.That(getVcsRoots, Is.Not.Null);
             Assert.That(getVcsRoots.Count, Is.GreaterThan(0));
             Assert.That(getVcsRoots.Href, Is.Not.Null);
@@ -89,7 +89,7 @@ namespace ServiceStack.TeamCity.Tests
         [Test]
         public void CanGetBuilds()
         {
-            var getBuilds = Client.Get(new GetBuilds());
+            var getBuilds = Client.GetBuilds();
             Assert.That(getBuilds, Is.Not.Null);
             Assert.That(getBuilds.Count, Is.GreaterThan(0));
             Assert.That(getBuilds.Href, Is.Not.Null);
@@ -100,7 +100,7 @@ namespace ServiceStack.TeamCity.Tests
         [Test]
         public void CanGetSingleBuild()
         {
-            var getBuild = Client.Get(new GetBuild { BuildLocator = "number:9" });
+            var getBuild = Client.GetBuild("number:9");
             Assert.That(getBuild, Is.Not.Null);
             Assert.That(getBuild.Triggered, Is.Not.Null);
             Assert.That(getBuild.Agent, Is.Not.Null);
@@ -127,7 +127,7 @@ namespace ServiceStack.TeamCity.Tests
         [Test]
         public void CanGetUsers()
         {
-            var getUsers = Client.Get(new GetUsers());
+            var getUsers = Client.GetUsers();
             Assert.That(getUsers, Is.Not.Null);
             Assert.That(getUsers.Count, Is.GreaterThan(0));
             Assert.That(getUsers.Users, Is.Not.Null);
@@ -137,7 +137,7 @@ namespace ServiceStack.TeamCity.Tests
         [Test]
         public void CanGetUser()
         {
-            var getUser = Client.Get(new GetUser {UserLocator = "username:" + Settings.GetString("UserName")});
+            var getUser = Client.GetUser("username:" + Settings.GetString("UserName"));
             Assert.That(getUser, Is.Not.Null);
             Assert.That(getUser.Name, Is.Not.Null);
             Assert.That(getUser.Id, Is.Not.Null);
@@ -153,7 +153,7 @@ namespace ServiceStack.TeamCity.Tests
         [Test]
         public void CanGetUserGroups()
         {
-            var getGroups = Client.Get(new GetUserGroups());
+            var getGroups = Client.GetUserGroups();
             Assert.That(getGroups, Is.Not.Null);
             Assert.That(getGroups.Count, Is.GreaterThan(0));
             Assert.That(getGroups.Groups, Is.Not.Null);
@@ -163,7 +163,7 @@ namespace ServiceStack.TeamCity.Tests
         [Test]
         public void CanGetUsersInGroup()
         {
-            var getUsersInGroup = Client.Get(new GetUsersInGroup { GroupLocator = "key:ALL_USERS_GROUP"});
+            var getUsersInGroup = Client.GetUsersInGroup("key:ALL_USERS_GROUP");
             Assert.That(getUsersInGroup, Is.Not.Null);
             Assert.That(getUsersInGroup.Name, Is.Not.Null);
             Assert.That(getUsersInGroup.ChildGroupsResponse, Is.Not.Null);
@@ -179,47 +179,31 @@ namespace ServiceStack.TeamCity.Tests
         [Test]
         public void CanCreateProject()
         {
-            XmlServiceClient serviceClient = new XmlServiceClient("http://localhost:8484/app/rest");
-            serviceClient.UserName = Client.UserName;
-            serviceClient.Password = Client.Password;
-            serviceClient.StoreCookies = true;
-            serviceClient.RequestFilter += request =>
+            var randomNameSuffix = new Random().Next();
+            var createProject = new CreateProject
             {
-                Console.WriteLine("Fo1");
+                Id = "TestProject" + randomNameSuffix,
+                Name = "TestProject" + randomNameSuffix,
+                ParentProject = new ProjectLocator
+                {
+                    Locator = "id:_Root"
+                }
             };
-            serviceClient.ResponseFilter += response =>
-            {
-                Console.WriteLine(response.ReadToEnd());
-            };
-            var req = new CreateProject {Name = "FooBar1"};
-            var rawReq = XmlSerializer.SerializeToString(req);
-
-            //Assert.That(createResponse, Is.Not.Null);
+            var response = Client.CreateProject(createProject);
+            Assert.That(response, Is.Not.Null);
+            Assert.That(response.Name, Is.Not.Null);
+            Assert.That(response.BuildTypes, Is.Not.Null);
+            Assert.That(response.Href, Is.Not.Null);
+            Assert.That(response.Id, Is.Not.Null);
+            Assert.That(response.Id, Is.EqualTo(createProject.Id));
+            Assert.That(response.Parameters, Is.Not.Null);
+            Assert.That(response.ParentProject, Is.Not.Null);
+            Assert.That(response.ParentProject.Id, Is.EqualTo("_Root"));
+            Assert.That(response.ParentProjectId, Is.EqualTo("_Root"));
+            Assert.That(response.Templates, Is.Not.Null);
+            Assert.That(response.Projects, Is.Not.Null);
+            Assert.That(response.VcsRoots, Is.Not.Null);
+            Assert.That(response.WebUrl, Is.Not.Null);
         }
-    }
-
-    [Route("/projects")]
-    [DataContract(Name = "newProjectDescription", Namespace = "")]
-    [XmlSerializerFormat]
-    public class CreateProject : IReturn<CreateProjectResponse>
-    {
-        [DataMember(Name = "name")]
-        [XmlAttribute]
-        public string Name { get; set; }
-    }
-
-    public class CreateProjectResponse
-    {
-    }
-
-    [DataContract]
-    public class CreateBuildConfig
-    {
-        [DataMember(Name = "id")]
-        public string Id { get; set; }
-        [DataMember(Name = "name")]
-        public string Name { get; set; }
-        [DataMember(Name = "projectId")]
-        public string ProjectId { get; set; }
     }
 }
