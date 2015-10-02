@@ -1,17 +1,9 @@
 ﻿using System;
 using System.IO;
-using System.Net;
-using System.Runtime.Serialization;
-using System.ServiceModel;
-using System.Xml;
-using System.Xml.Schema;
-using System.Xml.Serialization;
 using NUnit.Framework;
-using ServiceStack;
 using ServiceStack.Configuration;
-using ServiceStack.MiniProfiler;
 using ServiceStack.TeamCityClient;
-using XmlSerializer = ServiceStack.Text.XmlSerializer;
+using ServiceStack.TeamCityClient.Types;
 
 namespace ServiceStack.TeamCity.Tests
 {
@@ -32,23 +24,6 @@ namespace ServiceStack.TeamCity.Tests
                 "http://localhost:8484/app/rest",
                 Settings.GetString("UserName"),
                 Settings.GetString("Password"));
-        }
-
-        [Test]
-        public void CanAuthenticate()
-        {
-            HttpWebResponse response = null;
-            try
-            {
-                response = Client.ServiceClient.Get("/projects");
-            }
-            catch (Exception)
-            {
-                Assert.Fail("Authentication with TeamCity failed.");
-            }
-
-            Assert.That(response, Is.Not.Null);
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         }
 
         [Test]
@@ -122,6 +97,23 @@ namespace ServiceStack.TeamCity.Tests
             Assert.That(getBuild.Statistics, Is.Not.Null);
             Assert.That(getBuild.Status, Is.Not.Null);
             Assert.That(getBuild.StatusText, Is.Not.Null);
+        }
+
+        [Test]
+        public void CanGetProjectBuildConfigs()
+        {
+            var response = Client.GetBuildConfigs("id:TestProject1338478617");
+            Assert.That(response,Is.Not.Null);
+            Assert.That(response.Count, Is.GreaterThan(0));
+            Assert.That(response.BuildTypes, Is.Not.Null);
+            Assert.That(response.BuildTypes.Count, Is.GreaterThan(0));
+            Assert.That(response.BuildTypes[0], Is.Not.Null);
+            Assert.That(response.BuildTypes[0].Name,Is.Not.Null);
+            Assert.That(response.BuildTypes[0].Id,Is.Not.Null);
+            Assert.That(response.BuildTypes[0].Href,Is.Not.Null);
+            Assert.That(response.BuildTypes[0].ProjectName,Is.Not.Null);
+            Assert.That(response.BuildTypes[0].ProjectId,Is.Not.Null);
+            Assert.That(response.BuildTypes[0].WebUrl,Is.Not.Null);
         }
 
         [Test]
@@ -228,6 +220,42 @@ namespace ServiceStack.TeamCity.Tests
             Assert.That(response.Projects, Is.Not.Null);
             Assert.That(response.VcsRoots, Is.Not.Null);
             Assert.That(response.WebUrl, Is.Not.Null);
+        }
+
+        [Test]
+        public void CanCreateBuildConfig()
+        {
+            var randomNameSuffix = new Random().Next();
+            var createProject = new CreateProject
+            {
+                Id = "TestProject" + randomNameSuffix,
+                Name = "TestProject" + randomNameSuffix,
+            };
+            var response = Client.CreateProject(createProject);
+            var createBuildConfig = new CreateBuildConfig
+            {
+                ProjectLocator = "id:" + createProject.Id,
+                Name = "BuildMe"
+            };
+            var buildConfigResponse = Client.CreateBuildConfig(createBuildConfig);
+            Assert.That(buildConfigResponse, Is.Not.Null);
+            Assert.That(buildConfigResponse.Name, Is.Not.Null);
+            Assert.That(buildConfigResponse.AgentRequirementsResponse, Is.Not.Null);
+            Assert.That(buildConfigResponse.ArtifactDependenciesResponse, Is.Not.Null);
+            Assert.That(buildConfigResponse.Builds, Is.Not.Null);
+            Assert.That(buildConfigResponse.FeaturesResponse, Is.Not.Null);
+            Assert.That(buildConfigResponse, Is.Not.Null);
+            Assert.That(buildConfigResponse, Is.Not.Null);
+            Assert.That(buildConfigResponse, Is.Not.Null);
+            Assert.That(buildConfigResponse, Is.Not.Null);
+            Assert.That(buildConfigResponse, Is.Not.Null);
+            Assert.That(buildConfigResponse, Is.Not.Null);
+            Assert.That(buildConfigResponse, Is.Not.Null);
+            Assert.That(buildConfigResponse, Is.Not.Null);
+            Assert.That(buildConfigResponse, Is.Not.Null);
+            Assert.That(buildConfigResponse, Is.Not.Null);
+            Assert.That(buildConfigResponse, Is.Not.Null);
+            Assert.That(buildConfigResponse, Is.Not.Null);
         }
     }
 }

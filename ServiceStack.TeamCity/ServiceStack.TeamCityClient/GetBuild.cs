@@ -76,4 +76,19 @@ namespace ServiceStack.TeamCityClient
         [DataMember(Name = "statistics")]
         public Statistics Statistics { get; set; }
     }
+
+    [Route("/projects/{ProjectLocator}/buildTypes")]
+    public class GetProjectBuildConfigs : IReturn<GetProjectBuildConfigsResponse>
+    {
+        public string ProjectLocator { get; set; }
+    }
+
+    [DataContract]
+    public class GetProjectBuildConfigsResponse
+    {
+        [DataMember(Name = "count")]
+        public int Count { get; set; }
+        [DataMember(Name = "buildType")]
+        public List<BuildType> BuildTypes { get; set; }
+    }
 }

@@ -67,6 +67,9 @@ namespace ServiceStack.TeamCityClient.Types
         public int Count { get; set; }
         [DataMember(Name = "href")]
         public string Href { get; set; }
+        //TODO
+        [DataMember(Name = "vcs-root-entry")]
+        public List<object> VcsEntries { get; set; }
     }
 
     [DataContract]
@@ -330,5 +333,63 @@ namespace ServiceStack.TeamCityClient.Types
         public int Count { get; set; }
         [DataMember(Name = "group")]
         public List<Group> Groups { get; set; }
+    }
+
+    [DataContract]
+    public class SettingsResponse
+    {
+        [DataMember(Name = "count")]
+        public int Count { get; set; }
+        [DataMember(Name = "property")]
+        public List<Property> Properties { get; set; }
+    }
+
+    [DataContract]
+    public class StepsResponse
+    {
+        [DataMember(Name = "count")]
+        public int Count { get; set; }
+    }
+
+    [DataContract]
+    public class FeaturesResponse
+    {
+        [DataMember(Name = "count")]
+        public int Count { get; set; }
+    }
+
+    [DataContract]
+    public class TriggersResponse
+    {
+        [DataMember(Name = "count")]
+        public int Count { get; set; }
+    }
+
+    [DataContract]
+    public class SnapshotDependencies
+    {
+        [DataMember(Name = "count")]
+        public int Count { get; set; }
+    }
+
+    [DataContract]
+    public class ArtifactDependenciesResponse
+    {
+        [DataMember(Name = "count")]
+        public int Count { get; set; }
+    }
+
+    [DataContract]
+    public class AgentRequirementsResponse
+    {
+        [DataMember(Name = "count")]
+        public int Count { get; set; }
+    }
+
+    [DataContract]
+    public class Builds
+    {
+        [DataMember(Name = "href")]
+        public string Href { get; set; }
     }
 }
