@@ -56,6 +56,8 @@ namespace ServiceStack.TeamCityClient
         public GetUsersInGroupResponse GetUsersInGroup(string locator) =>
             ServiceClient.Get(new GetUsersInGroup { GroupLocator = locator });
 
+        
+
         public CreateProjectResponse CreateProject(CreateProject project)
         {
             TcXmlServiceClient xmlServiceClient = new TcXmlServiceClient(
@@ -69,7 +71,6 @@ namespace ServiceStack.TeamCityClient
 
     public class TcXmlServiceClient : XmlServiceClient
     {
-
         public TcXmlServiceClient(string baseUrl, string userName, string password)
             : base(baseUrl)
         {

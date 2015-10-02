@@ -177,7 +177,7 @@ namespace ServiceStack.TeamCity.Tests
         }
 
         [Test]
-        public void CanCreateProject()
+        public void CanCreateProjectUnderRoot()
         {
             var randomNameSuffix = new Random().Next();
             var createProject = new CreateProject
@@ -200,6 +200,30 @@ namespace ServiceStack.TeamCity.Tests
             Assert.That(response.ParentProject, Is.Not.Null);
             Assert.That(response.ParentProject.Id, Is.EqualTo("_Root"));
             Assert.That(response.ParentProjectId, Is.EqualTo("_Root"));
+            Assert.That(response.Templates, Is.Not.Null);
+            Assert.That(response.Projects, Is.Not.Null);
+            Assert.That(response.VcsRoots, Is.Not.Null);
+            Assert.That(response.WebUrl, Is.Not.Null);
+        }
+
+        [Test]
+        public void CanCreateEmptyRootProject()
+        {
+            var randomNameSuffix = new Random().Next();
+            var createProject = new CreateProject
+            {
+                Id = "TestProject" + randomNameSuffix,
+                Name = "TestProject" + randomNameSuffix,
+            };
+            var response = Client.CreateProject(createProject);
+            Assert.That(response, Is.Not.Null);
+            Assert.That(response.Name, Is.Not.Null);
+            Assert.That(response.BuildTypes, Is.Not.Null);
+            Assert.That(response.Href, Is.Not.Null);
+            Assert.That(response.Id, Is.Not.Null);
+            Assert.That(response.Id, Is.EqualTo(createProject.Id));
+            Assert.That(response.Parameters, Is.Not.Null);
+            Assert.That(response.ParentProject, Is.Not.Null);
             Assert.That(response.Templates, Is.Not.Null);
             Assert.That(response.Projects, Is.Not.Null);
             Assert.That(response.VcsRoots, Is.Not.Null);
