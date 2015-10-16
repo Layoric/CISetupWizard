@@ -29,6 +29,7 @@ namespace ServiceStack.TeamCityClient
         public bool ShareVcsRoot { get; set; }
     }
 
+    [DataContract]
     public class CreateBuildConfigResponse
     {
         [DataMember(Name = "id")]

@@ -57,6 +57,7 @@
   <ItemGroup>
     <Compile Include="CreateBuildConfig.cs" />
     <Compile Include="CreateProject.cs" />
+    <Compile Include="DeleteProject.cs" />
     <Compile Include="GetBuild.cs" />
     <Compile Include="GetProject.cs" />
     <Compile Include="GetUser.cs" />

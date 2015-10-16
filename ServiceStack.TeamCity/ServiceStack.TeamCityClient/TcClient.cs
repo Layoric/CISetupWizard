@@ -59,8 +59,9 @@ namespace ServiceStack.TeamCityClient
         public CreateBuildConfigResponse CreateBuildConfig(CreateBuildConfig buildConfig) =>
             XmlServiceClient.Post(buildConfig);
 
-        //public void DeleteProject(string locator)
-        
+        public void DeleteProject(string locator) =>
+            XmlServiceClient.Delete(new DeleteProject {ProjectLocator = locator});
+
     }
 
     public class TcXmlServiceClient : XmlServiceClient
