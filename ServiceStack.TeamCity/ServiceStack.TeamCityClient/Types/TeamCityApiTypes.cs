@@ -8,14 +8,19 @@ namespace ServiceStack.TeamCityClient.Types
     {
         [DataMember(Name = "id")]
         public string Id { get; set; }
+
         [DataMember(Name = "name")]
         public string Name { get; set; }
+
         [DataMember(Name = "description")]
         public string Description { get; set; }
+
         [DataMember(Name = "href")]
         public string Href { get; set; }
+
         [DataMember(Name = "webUrl")]
         public string WebUrl { get; set; }
+
         [DataMember(Name = "parentProjectId")]
         public string ParentProjectId { get; set; }
     }
@@ -25,8 +30,10 @@ namespace ServiceStack.TeamCityClient.Types
     {
         [DataMember(Name = "id")]
         public string Id { get; set; }
+
         [DataMember(Name = "name")]
         public string Name { get; set; }
+
         [DataMember(Name = "href")]
         public string Href { get; set; }
     }
@@ -36,6 +43,7 @@ namespace ServiceStack.TeamCityClient.Types
     {
         [DataMember(Name = "count")]
         public int Count { get; set; }
+
         [DataMember(Name = "buildType")]
         public List<BuildType> BuildTypes { get; set; }
     }
@@ -45,6 +53,7 @@ namespace ServiceStack.TeamCityClient.Types
     {
         [DataMember(Name = "count")]
         public int Count { get; set; }
+
         [DataMember(Name = "buildType")]
         public List<BuildType> BuildTypes { get; set; }
     }
@@ -54,8 +63,10 @@ namespace ServiceStack.TeamCityClient.Types
     {
         [DataMember(Name = "count")]
         public int Count { get; set; }
+
         [DataMember(Name = "href")]
         public string Href { get; set; }
+
         [DataMember(Name = "property")]
         public List<Property> Properties { get; set; }
     }
@@ -65,11 +76,44 @@ namespace ServiceStack.TeamCityClient.Types
     {
         [DataMember(Name = "count")]
         public int Count { get; set; }
+
         [DataMember(Name = "href")]
         public string Href { get; set; }
+
         //TODO
         [DataMember(Name = "vcs-root-entry")]
         public List<object> VcsEntries { get; set; }
+    }
+
+    [DataContract]
+    public class VcsRootResponse
+    {
+        [DataMember(Name = "id")]
+        public string Id { get; set; }
+
+        [DataMember(Name = "name")]
+        public string Name { get; set; }
+
+        [DataMember(Name = "vcsName")]
+        public string VcsName { get; set; }
+
+        [DataMember(Name = "status")]
+        public string Status { get; set; }
+
+        [DataMember(Name = "lastChecked")]
+        public string LastChecked { get; set; }
+
+        [DataMember(Name = "href")]
+        public string Href { get; set; }
+
+        [DataMember(Name = "project")]
+        public Project Project { get; set; }
+
+        [DataMember(Name = "properties")]
+        public Properties Properties { get; set; }
+
+        [DataMember(Name = "vcsRootInstances")]
+        public VcsRootInstance VcsRootInstances { get; set; }
     }
 
     [DataContract]
@@ -77,6 +121,7 @@ namespace ServiceStack.TeamCityClient.Types
     {
         [DataMember(Name = "count")]
         public int Count { get; set; }
+
         [DataMember(Name = "project")]
         public List<Project> Projects { get; set; }
     }
@@ -86,10 +131,13 @@ namespace ServiceStack.TeamCityClient.Types
     {
         [DataMember(Name = "username")]
         public string UserName { get; set; }
+
         [DataMember(Name = "name")]
         public string Name { get; set; }
+
         [DataMember(Name = "id")]
         public int Id { get; set; }
+
         [DataMember(Name = "href")]
         public string Href { get; set; }
     }
@@ -99,6 +147,7 @@ namespace ServiceStack.TeamCityClient.Types
     {
         [DataMember(Name = "count")]
         public int Count { get; set; }
+
         [DataMember(Name = "user")]
         public List<User> Users { get; set; }
     }
@@ -108,16 +157,22 @@ namespace ServiceStack.TeamCityClient.Types
     {
         [DataMember(Name = "id")]
         public int Id { get; set; }
+
         [DataMember(Name = "buildTypeId")]
         public string BuildTypeId { get; set; }
+
         [DataMember(Name = "number")]
         public string Number { get; set; }
+
         [DataMember(Name = "status")]
         public string Status { get; set; }
+
         [DataMember(Name = "state")]
         public string State { get; set; }
+
         [DataMember(Name = "href")]
         public string Href { get; set; }
+
         [DataMember(Name = "webUrl")]
         public string WebUrl { get; set; }
     }
@@ -127,14 +182,19 @@ namespace ServiceStack.TeamCityClient.Types
     {
         [DataMember(Name = "id")]
         public string Id { get; set; }
+
         [DataMember(Name = "name")]
         public string Name { get; set; }
+
         [DataMember(Name = "projectName")]
         public string ProjectName { get; set; }
+
         [DataMember(Name = "projectId")]
         public string ProjectId { get; set; }
+
         [DataMember(Name = "href")]
         public string Href { get; set; }
+
         [DataMember(Name = "webUrl")]
         public string WebUrl { get; set; }
     }
@@ -144,8 +204,10 @@ namespace ServiceStack.TeamCityClient.Types
     {
         [DataMember(Name = "type")]
         public string Type { get; set; }
+
         [DataMember(Name = "date")]
         public string Date { get; set; }
+
         [DataMember(Name = "user")]
         public User User { get; set; }
     }
@@ -155,14 +217,19 @@ namespace ServiceStack.TeamCityClient.Types
     {
         [DataMember(Name = "id")]
         public int Id { get; set; }
+
         [DataMember(Name = "version")]
         public string Version { get; set; }
+
         [DataMember(Name = "username")]
         public string Username { get; set; }
+
         [DataMember(Name = "date")]
         public string Date { get; set; }
+
         [DataMember(Name = "href")]
         public string Href { get; set; }
+
         [DataMember(Name = "webUrl")]
         public string WebUrl { get; set; }
     }
@@ -179,6 +246,7 @@ namespace ServiceStack.TeamCityClient.Types
     {
         [DataMember(Name = "count")]
         public int Count { get; set; }
+
         [DataMember(Name = "change")]
         public List<Change> Changes { get; set; }
     }
@@ -188,10 +256,13 @@ namespace ServiceStack.TeamCityClient.Types
     {
         [DataMember(Name = "id")]
         public string Id { get; set; }
+
         [DataMember(Name = "vcs-root-id")]
         public string VcsRootId { get; set; }
+
         [DataMember(Name = "name")]
         public string Name { get; set; }
+
         [DataMember(Name = "href")]
         public string Href { get; set; }
     }
@@ -201,6 +272,7 @@ namespace ServiceStack.TeamCityClient.Types
     {
         [DataMember(Name = "version")]
         public string Version { get; set; }
+
         [DataMember(Name = "vcs-root-instance")]
         public VcsRootInstance VcsRootInstance { get; set; }
     }
@@ -210,6 +282,7 @@ namespace ServiceStack.TeamCityClient.Types
     {
         [DataMember(Name = "count")]
         public int Count { get; set; }
+
         [DataMember(Name = "revision")]
         public List<Revision> Revisions { get; set; }
     }
@@ -219,10 +292,13 @@ namespace ServiceStack.TeamCityClient.Types
     {
         [DataMember(Name = "id")]
         public int Id { get; set; }
+
         [DataMember(Name = "name")]
         public string Name { get; set; }
+
         [DataMember(Name = "typeId")]
         public int TypeId { get; set; }
+
         [DataMember(Name = "href")]
         public string Href { get; set; }
     }
@@ -232,8 +308,10 @@ namespace ServiceStack.TeamCityClient.Types
     {
         [DataMember(Name = "count")]
         public int Count { get; set; }
+
         [DataMember(Name = "href")]
         public string Href { get; set; }
+
         [DataMember(Name = "default")]
         public bool IsDefault { get; set; }
     }
@@ -255,9 +333,10 @@ namespace ServiceStack.TeamCityClient.Types
     [DataContract]
     public class Property
     {
-        [DataMember(Name= "name")]
+        [DataMember(Name = "name")]
         public string Name { get; set; }
-        [DataMember(Name= "value")]
+
+        [DataMember(Name = "value")]
         public string Value { get; set; }
     }
 
@@ -266,6 +345,7 @@ namespace ServiceStack.TeamCityClient.Types
     {
         [DataMember(Name = "count")]
         public int Count { get; set; }
+
         [DataMember(Name = "property")]
         public List<Property> Properties { get; set; }
     }
@@ -282,8 +362,10 @@ namespace ServiceStack.TeamCityClient.Types
     {
         [DataMember(Name = "roleId")]
         public string RoleId { get; set; }
+
         [DataMember(Name = "scope")]
         public string Scope { get; set; }
+
         [DataMember(Name = "href")]
         public string Href { get; set; }
     }
@@ -298,13 +380,16 @@ namespace ServiceStack.TeamCityClient.Types
     [DataContract]
     public class Group
     {
-        [DataMember(Name  = "key")]
+        [DataMember(Name = "key")]
         public string Key { get; set; }
-        [DataMember(Name  = "name")]
+
+        [DataMember(Name = "name")]
         public string Name { get; set; }
-        [DataMember(Name  = "href")]
+
+        [DataMember(Name = "href")]
         public string Href { get; set; }
-        [DataMember(Name  = "description")]
+
+        [DataMember(Name = "description")]
         public string Description { get; set; }
     }
 
@@ -313,6 +398,7 @@ namespace ServiceStack.TeamCityClient.Types
     {
         [DataMember(Name = "count")]
         public int Count { get; set; }
+
         [DataMember(Name = "group")]
         public List<Group> Groups { get; set; }
     }
@@ -322,6 +408,7 @@ namespace ServiceStack.TeamCityClient.Types
     {
         [DataMember(Name = "count")]
         public int Count { get; set; }
+
         [DataMember(Name = "group")]
         public List<Group> Groups { get; set; }
     }
@@ -331,6 +418,7 @@ namespace ServiceStack.TeamCityClient.Types
     {
         [DataMember(Name = "count")]
         public int Count { get; set; }
+
         [DataMember(Name = "group")]
         public List<Group> Groups { get; set; }
     }
@@ -340,6 +428,7 @@ namespace ServiceStack.TeamCityClient.Types
     {
         [DataMember(Name = "count")]
         public int Count { get; set; }
+
         [DataMember(Name = "property")]
         public List<Property> Properties { get; set; }
     }

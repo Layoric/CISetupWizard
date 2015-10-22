@@ -62,6 +62,9 @@ namespace ServiceStack.TeamCityClient
         public void DeleteProject(string locator) =>
             XmlServiceClient.Delete(new DeleteProject {ProjectLocator = locator});
 
+        public CreateVcsRootResponse CreateVcsRoot(CreateVcsRoot vcsRoot) =>
+            XmlServiceClient.Post(vcsRoot);
+
     }
 
     public class TcXmlServiceClient : XmlServiceClient
@@ -80,6 +83,12 @@ namespace ServiceStack.TeamCityClient
             var ns = new XmlSerializerNamespaces();
             var ser = new XmlSerializer(request.GetType());
             var streamWriter = new XmlTextWriter(stream, Encoding.UTF8);
+            string temp;
+            using (StringWriter textWriter = new StringWriter())
+            {
+                ser.Serialize(textWriter, request);
+                temp = textWriter.ToString();
+            }
             ser.Serialize(streamWriter, request, ns);
         }
 

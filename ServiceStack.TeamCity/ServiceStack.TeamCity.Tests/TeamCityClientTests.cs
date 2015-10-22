@@ -1,7 +1,10 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using NUnit.Framework;
 using ServiceStack.Configuration;
 using ServiceStack.TeamCityClient;
+using ServiceStack.TeamCityClient.Types;
 
 namespace ServiceStack.TeamCity.Tests
 {
@@ -258,6 +261,58 @@ namespace ServiceStack.TeamCity.Tests
             Assert.That(buildConfigResponse, Is.Not.Null);
             Assert.That(buildConfigResponse, Is.Not.Null);
             Client.DeleteProject("id:" + response.Id);
+        }
+
+        [Test]
+        public void CanCreateNewVcsRoot()
+        {
+            var proj = new CreateProject
+            {
+                Name = "TestProj123"
+            };
+            var projRes = Client.CreateProject(proj);
+
+            var createVcs = new CreateVcsRoot
+            {
+                Name = "TestVcs1",
+                VcsName = "jetbrains.git",
+                Project = new CreateVcsRootProject {  Id = projRes.Id },
+                Properties = new CreateVcsRootProperties
+                {
+                    Properties = new List<CreateVcsRootProperty>
+                    {
+                        new CreateVcsRootProperty
+                        {
+                            Name = "url",
+                            Value = "https://github.com/ServiceStackApps/StackApis.git"
+                        },
+                        new CreateVcsRootProperty
+                        {
+                            Name = "authMethod",
+                            Value = "ANONYMOUS"
+                        },
+                        new CreateVcsRootProperty
+                        {
+                            Name = "branch",
+                            Value = "refs/heads/master"
+                        }
+                    }
+                }
+            };
+            CreateVcsRootResponse response = null;
+            try
+            {
+                response = Client.CreateVcsRoot(createVcs);
+            }
+            catch (Exception e)
+            {
+                Client.DeleteProject("id:" + projRes.Id);
+                throw;
+            }
+            
+            Assert.That(response, Is.Not.Null);
+
+            Client.DeleteProject("id:" + projRes.Id);
         }
     }
 }

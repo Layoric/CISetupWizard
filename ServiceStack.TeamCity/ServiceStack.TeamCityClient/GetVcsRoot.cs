@@ -8,7 +8,7 @@ using ServiceStack.TeamCityClient.Types;
 
 namespace ServiceStack.TeamCityClient
 {
-    [Route("/vcs-roots")]
+    [Route("/vcs-roots", Verbs = "GET")]
     public class GetVcsRoots : IReturn<GetVcsRootsResponse>
     {
 
@@ -23,5 +23,5 @@ namespace ServiceStack.TeamCityClient
         public string Href { get; set; }
         [DataMember(Name = "vcs-root")]
         public List<VcsRoot> VcsRoots { get; set; }
-}
+    }
 }
