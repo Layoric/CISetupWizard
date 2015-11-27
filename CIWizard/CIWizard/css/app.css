@@ -1,8 +1,14 @@
 ﻿body {
+    font-family: "Open Sans", serif;
 }
 
 .github-login {
     display: block;
+}
+
+.github-passthrough {
+    text-align: center;
+    align-content: center;
 }
 
 .github-login-container {
@@ -10,5 +16,10 @@
 }
 .github-login-container > span {
     font-size: x-large;
-    font-family: 'Calibri';
+}
+
+@media only screen and (min-width : 768px) {
+    .navbar {
+        max-height: 50px;
+    }
 }
