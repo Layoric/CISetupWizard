@@ -6,16 +6,20 @@
         'ngRoute',
         'navigation.controllers',
         'home',
-        'authentication'
+        'authentication',
+        'manage-repo',
+        'github',
+        'team-city',
+        'local-services'
     ]);
 
     module.config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
         $routeProvider.when('/', { templateUrl: '/js/home/home.html', controller: 'homeCtrl' });
         $routeProvider.when('/auth/:any', { controller: function () { location.href = location.href; }, template: '<div class="github-passthrough">Passing you to GitHub now..</div>' });
-
+        $routeProvider.when('/repos/:repoName', { controller: 'managerRepoCtrl', templateUrl: '/js/manage-repo/manage-repo.html' });
         $routeProvider.otherwise({ redirectTo: '/' });
 
-        $locationProvider.html5Mode(true);
+        $locationProvider.html5Mode(false);
     }]);
 })();
 

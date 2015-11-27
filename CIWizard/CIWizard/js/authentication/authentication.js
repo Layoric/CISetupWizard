@@ -21,9 +21,6 @@
                     deferred.resolve(userDetails);
                 });
                 return deferred.promise;
-            },
-            getUserRepos: function () {
-                return $http.get('/user/repos');
             }
         }
     }]);

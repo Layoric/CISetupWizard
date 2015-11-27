@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using ServiceStack;
+using ServiceStack.Text;
 
 namespace CIWizard.ServiceInterface
 {
@@ -8,20 +8,65 @@ namespace CIWizard.ServiceInterface
     public class GitHubServices : Service
     {
         private const string GitHubApiGetReposUrl = "https://api.github.com/user/repos?access_token={0}&per_page={1}&visibility=all";
+        private const string GitHubApiGetRepoUrl = "https://api.github.com/repos/{1}/{2}?access_token={0}";
 
         public GetGitHubRepositoriesResponse Get(GetGitHubRepositories request)
         {
-            var gitHubToken = SessionAs<AuthUserSession>().ProviderOAuthAccess.First().Items["access_token"];
-            var response = GitHubApiGetReposUrl.Fmt(gitHubToken, request.PerPage ?? "200").GetJsonFromUrl((req) =>
+            var gitHubToken = SessionAs<AuthUserSession>().GetGitHubAccessToken();
+            var response = GitHubApiGetReposUrl.Fmt(gitHubToken, request.PerPage ?? "200").GetJsonFromUrl(req =>
             {
                 req.UserAgent = ".NET";
             });
-            var repos = response.FromJson<List<GitHubRepository>>();
+
+            var repos = new List<GitHubRepository>();
+
+            using (JsConfig
+                .With(propertyConvention: PropertyConvention.Lenient,
+                    emitLowercaseUnderscoreNames: true,
+                    emitCamelCaseNames: false))
+            {
+                repos = response.FromJson<List<GitHubRepository>>();
+            }
+
             return new GetGitHubRepositoriesResponse
             {
                 Repos = repos
             };
         }
+
+        public GetGitHubRepositoryResponse Get(GetGitHubRepository request)
+        {
+            var session = SessionAs<AuthUserSession>();
+            var gitHubToken = session.GetGitHubAccessToken();
+            var response =
+                GitHubApiGetRepoUrl.Fmt(gitHubToken, session.UserName, request.RepositoryName).GetJsonFromUrl(req =>
+                {
+                    req.UserAgent = ".NET";
+                });
+            GitHubRepository repo;
+            using (JsConfig
+                .With(propertyConvention: PropertyConvention.Lenient,
+                    emitLowercaseUnderscoreNames: true,
+                    emitCamelCaseNames: false))
+            {
+                repo = response.FromJson<GitHubRepository>();
+            }
+            return new GetGitHubRepositoryResponse
+            {
+                Repo = repo
+            };
+        }
+    }
+
+    [Route("/user/repos/{RepositoryName}")]
+    public class GetGitHubRepository
+    {
+        public string RepositoryName { get; set; }
+    }
+
+    public class GetGitHubRepositoryResponse
+    {
+        public GitHubRepository Repo { get; set; }
     }
 
     public class GetGitHubRepositoriesResponse

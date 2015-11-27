@@ -1,4 +1,7 @@
 ﻿<div>
-    <github-Login-splash ng-show="!isAuthenticated"></github-Login-splash>
-    <github-select-repo ng-show="isAuthenticated"></github-select-repo>
+    <github-login-splash ng-show="!isAuthenticated"></github-login-splash>
+
+    <team-city-current-configs ng-show="isAuthenticated"></team-city-current-configs>
+
+    <github-select-repo ng-show="isAuthenticated" on-select="onRepoSelect(repo)"></github-select-repo>
 </div>

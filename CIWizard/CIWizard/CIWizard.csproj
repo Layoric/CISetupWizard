@@ -108,9 +108,16 @@
     <Content Include="img\Octocat.jpg" />
     <Content Include="js\app.js" />
     <Content Include="js\authentication\authentication.js" />
+    <Content Include="js\github\github.js" />
     <Content Include="js\home\home.html" />
     <Content Include="js\home\home.js" />
+    <Content Include="js\home\show-repos.html" />
+    <Content Include="js\local-services\local-services.js" />
+    <Content Include="js\manage-repo\manage-repo.html" />
+    <Content Include="js\manage-repo\manage-repo.js" />
     <Content Include="js\navigation\controllers.js" />
+    <Content Include="js\team-city\team-city-configs.html" />
+    <Content Include="js\team-city\team-city.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="tests\karma.conf.js" />
     <Content Include="packages.config">
