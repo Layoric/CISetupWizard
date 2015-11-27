@@ -111,7 +111,7 @@
     <Content Include="js\github\github.js" />
     <Content Include="js\home\home.html" />
     <Content Include="js\home\home.js" />
-    <Content Include="js\home\show-repos.html" />
+    <Content Include="js\github\show-repos.html" />
     <Content Include="js\local-services\local-services.js" />
     <Content Include="js\manage-repo\manage-repo.html" />
     <Content Include="js\manage-repo\manage-repo.js" />

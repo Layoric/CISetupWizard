@@ -1,5 +1,19 @@
 <div>
-    <ul>
-        <li ng-repeat="config in teamCityConfigs"></li>
-    </ul>
+    <h2>Active Configurations</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <td>Name</td>
+                <td>Status</td>
+                <td>Last Updated</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="tcConfig in teamCityConfigs">
+                <td><a href="#/repos/{{tcConfig.name}}" ng-bind="tcConfig.name"></a></td>
+                <td><a href="#/repos/{{tcConfig.name}}" ng-bind="tcConfig.status"></a></td>
+                <td><a href="#/repos/{{tcConfig.name}}" ng-bind="tcConfig.lastUpdated"></a></td>
+            </tr>
+        </tbody>
+    </table>
 </div>

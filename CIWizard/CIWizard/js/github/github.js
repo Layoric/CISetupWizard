@@ -30,7 +30,7 @@
                 scope: {
                     onSelect: '&'
                 },
-                templateUrl: 'js/home/show-repos.html',
+                templateUrl: 'js/github/show-repos.html',
                 controller: function ($scope, $element, $attrs) {
                     $scope.selectRepo = function (repo) {
                         if($scope.onSelect) {
