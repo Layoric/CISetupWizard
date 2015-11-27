@@ -1,0 +1,37 @@
+<div class="panel">
+    <div ng-show="isLoading" style="align-content: center;text-align: center">
+        <img src="/img/Loading_icon.gif" />
+    </div>
+    <div ng-show="!isLoading">
+        <div class="form-group">
+            <label for="filterRepos">Search</label>
+            <input type="text" id="filterRepos" ng-model="search.val" class="form-control">
+        </div>
+        <div ng-repeat="org in allOrgs" ng-show="(org.repos | filter: { name: search.val }).length > 0">
+            <h3 ng-bind="org.orgName"></h3>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <td>Name</td>
+                        <td>Description</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="repo in org.repos | filter: { name: search.val }">
+                        <td>
+                            <a href="" ng-click="selectRepo(repo)" >
+                                <span class="glyphicon glyphicon-lock" style="color: gold" ng-show="repo.private"></span>
+                                <span ng-bind="repo.name"></span>
+                            </a>
+                        </td>
+                        <td>
+                            <a href="" ng-click="selectRepo(repo)" >
+                                <span ng-bind="repo.description"></span>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

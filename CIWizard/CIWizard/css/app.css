@@ -1,2 +1,14 @@
 ﻿body {
 }
+
+.github-login {
+    display: block;
+}
+
+.github-login-container {
+    text-align: center;
+}
+.github-login-container > span {
+    font-size: x-large;
+    font-family: 'Calibri';
+}

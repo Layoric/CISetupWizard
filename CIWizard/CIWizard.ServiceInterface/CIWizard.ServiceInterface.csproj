@@ -73,8 +73,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GitHubServices.cs" />
     <Compile Include="MyServices.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SessionInfoService.cs" />
     <Compile Include="TeamCityWizardService.cs" />
   </ItemGroup>
   <ItemGroup>

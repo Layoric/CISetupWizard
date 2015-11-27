@@ -318,14 +318,6 @@ namespace ServiceStack.TeamCity.Tests
             Assert.That(response.Properties.Count, Is.EqualTo(3));
             Assert.That(response.VcsRootInstances, Is.Not.Null);
 
-            var createBuildConfig = new CreateBuildConfig
-            {
-                Locator = "id:" + projRes.Id,
-                Name = "Build"
-            };
-
-            var buildRes = Client.CreateBuildConfig(createBuildConfig);
-
             Client.DeleteProject(new DeleteProject { Locator = "id:" + projRes.Id });
         }
 

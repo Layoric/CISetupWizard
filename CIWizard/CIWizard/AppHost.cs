@@ -10,7 +10,10 @@ using CIWizard.ServiceInterface;
 using ServiceStack;
 using ServiceStack.Auth;
 using ServiceStack.Configuration;
+using ServiceStack.OrmLite;
 using ServiceStack.Razor;
+using ServiceStack.TeamCityClient;
+using ServiceStack.Text;
 
 namespace CIWizard
 {
@@ -18,7 +21,7 @@ namespace CIWizard
     {
         /// <summary>
         /// Default constructor.
-        /// Base constructor requires a name and assembly to locate web service classes. 
+        /// Base constructor requires a Name and assembly to locate web service classes. 
         /// </summary>
         public AppHost()
             : base("CIWizard", typeof(MyServices).Assembly)
@@ -33,7 +36,7 @@ namespace CIWizard
         /// Application specific configuration
         /// This method should initialize any IoC resources utilized by your web service classes.
         /// </summary>
-        /// <param name="container"></param>
+        /// <param Name="container"></param>
         public override void Configure(Container container)
         {
             //Config examples
@@ -52,6 +55,13 @@ namespace CIWizard
             {
                 new GithubAuthProvider(AppSettings), 
             }));
+
+            container.Register(new TcClient(
+                AppSettings.GetString("ServerApiBaseUrl"),
+                AppSettings.GetString("UserName"),
+                AppSettings.GetString("Password")));
+
+            JsConfig.EmitCamelCaseNames = true;
         }
     }
 }

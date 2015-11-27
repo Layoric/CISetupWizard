@@ -77,6 +77,7 @@
       <HintPath>..\..\packages\ServiceStack.Text.4.0.46\lib\net40\ServiceStack.Text.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -103,14 +104,14 @@
     <Content Include="css\app.css" />
     <Content Include="gruntfile.js" />
     <Content Include="default.cshtml" />
+    <Content Include="img\github_normal.png" />
+    <Content Include="img\Octocat.jpg" />
     <Content Include="js\app.js" />
-    <Content Include="js\hello\controllers.js" />
+    <Content Include="js\authentication\authentication.js" />
+    <Content Include="js\home\home.html" />
+    <Content Include="js\home\home.js" />
     <Content Include="js\navigation\controllers.js" />
-    <Content Include="partials\hello\hello.html" />
     <Content Include="Scripts\_references.js" />
-    <Content Include="partials\partial1.html" />
-    <Content Include="partials\partial2.html" />
-    <Content Include="partials\404.html" />
     <Content Include="tests\karma.conf.js" />
     <Content Include="packages.config">
       <SubType>Designer</SubType>
@@ -150,9 +151,12 @@
       <Project>{08bef328-ab7d-48d3-800d-48acc75c7914}</Project>
       <Name>CIWizard.ServiceModel</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ServiceStack.TeamCityClient\ServiceStack.TeamCityClient.csproj">
+      <Project>{489a06a1-af45-481c-b46b-5664d3ec45dc}</Project>
+      <Name>ServiceStack.TeamCityClient</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="img\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
