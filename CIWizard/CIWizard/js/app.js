@@ -16,7 +16,7 @@
     module.config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
         $routeProvider.when('/', { templateUrl: '/js/home/home.html', controller: 'homeCtrl' });
         $routeProvider.when('/auth/:any', { controller: function () { location.href = location.href; }, template: '<div class="github-passthrough">Passing you to GitHub now..</div>' });
-        $routeProvider.when('/repos/:repoName', { controller: 'managerRepoCtrl', templateUrl: '/js/manage-repo/manage-repo.html' });
+        $routeProvider.when('/manage/:ownerName/:repoName', { controller: 'managerRepoCtrl', templateUrl: '/js/manage-repo/manage-repo.html' });
         $routeProvider.otherwise({ redirectTo: '/' });
 
         $locationProvider.html5Mode(false);

@@ -7,13 +7,16 @@ using System.Reflection;
 using System.Web;
 using Funq;
 using CIWizard.ServiceInterface;
+using CIWizard.ServiceModel;
 using ServiceStack;
 using ServiceStack.Auth;
 using ServiceStack.Configuration;
+using ServiceStack.FluentValidation;
 using ServiceStack.OrmLite;
 using ServiceStack.Razor;
 using ServiceStack.TeamCityClient;
 using ServiceStack.Text;
+using ServiceStack.Validation;
 
 namespace CIWizard
 {
@@ -46,15 +49,20 @@ namespace CIWizard
             SetConfig(new HostConfig
             {
                 DebugMode = AppSettings.Get("DebugMode", false),
-                AddRedirectParamsToQueryString = true
+                AddRedirectParamsToQueryString = true,
+                
             });
 
             this.Plugins.Add(new RazorFormat());
+            Plugins.Add(new ValidationFeature());
+            container.RegisterValidators(typeof(CreateSpaBuildProjectValidator).Assembly);
 
             this.Plugins.Add(new AuthFeature(() => new AuthUserSession(), new IAuthProvider[]
             {
                 new GithubAuthProvider(AppSettings), 
             }));
+
+            LicenseUtils.RegisterLicense(AppSettings.GetString("ServiceStackLicense"));
 
             container.Register(new TcClient(
                 AppSettings.GetString("ServerApiBaseUrl"),
@@ -62,6 +70,18 @@ namespace CIWizard
                 AppSettings.GetString("Password")));
 
             JsConfig.EmitCamelCaseNames = true;
+
+            
+        }
+    }
+
+    public class CreateSpaBuildProjectValidator : AbstractValidator<CreateSpaBuildProject>
+    {
+        public CreateSpaBuildProjectValidator()
+        {
+            RuleFor(x => x.RepositoryUrl).NotNull().NotEmpty();
+            RuleFor(x => x.SolutionPath).NotNull().NotEmpty();
+            RuleFor(x => x.WorkingDirectory).NotNull().NotEmpty();
         }
     }
 }

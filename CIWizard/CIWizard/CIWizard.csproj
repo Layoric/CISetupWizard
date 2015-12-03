@@ -105,6 +105,7 @@
     <Content Include="gruntfile.js" />
     <Content Include="default.cshtml" />
     <Content Include="img\github_normal.png" />
+    <Content Include="img\Loading_icon.gif" />
     <Content Include="img\Octocat.jpg" />
     <Content Include="js\app.js" />
     <Content Include="js\authentication\authentication.js" />

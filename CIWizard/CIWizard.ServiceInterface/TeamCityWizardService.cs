@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using CIWizard.ServiceModel;
 using ServiceStack;
 using ServiceStack.TeamCityClient;
@@ -16,12 +12,20 @@ namespace CIWizard.ServiceInterface
         public CreateSpaBuildProjectResponse Post(CreateSpaBuildProject request)
         {
             var response = new CreateSpaBuildProjectResponse();
-
-            var createProject = new CreateProject { Name = "TestTS" };
+            var session = SessionAs<AuthUserSession>();
+            var gitHubToken = session.GetGitHubAccessToken();
+            var createProject = new CreateProject
+            {
+                Name = request.Name,
+                ParentProject = new ProjectLocator
+                {
+                    Locator = "id:_Root"
+                }
+            };
             var createProjResponse = TeamCityClient.CreateProject(createProject);
             var createVcs = new CreateVcsRoot
             {
-                Name = "GitHub_Test1",
+                Name = "GitHub_{0}".Fmt(request.Name),
                 VcsName = VcsRootTypes.Git,
                 Project = new CreateVcsRootProject { Id = createProjResponse.Id },
                 Properties = new CreateVcsRootProperties
@@ -30,30 +34,40 @@ namespace CIWizard.ServiceInterface
                     {
                         new CreateVcsRootProperty
                         {
-                            Name = "Url",
-                            Value = "https://github.com/ServiceStackApps/TechStacks.git"
+                            Name = "url",
+                            Value = request.RepositoryUrl
                         },
                         new CreateVcsRootProperty
                         {
                             Name = "authMethod",
-                            Value = "ANONYMOUS"
+                            Value = request.PrivateRepository ? "PASSWORD" : "ANONYMOUS"
                         },
                         new CreateVcsRootProperty
                         {
                             Name = "branch",
-                            Value = "refs/heads/master"
+                            Value = "refs/heads/{0}".Fmt(request.Branch ?? "master")
                         }
                     }
                 }
             };
+            // Use OAuth access_token as username as per https://github.com/blog/1270-easier-builds-and-deployments-using-git-over-https-and-oauth#using-oauth-with-git
+            if (request.PrivateRepository)
+            {
+                createVcs.Properties.Properties.Add(new CreateVcsRootProperty
+                {
+                    Name = "username",
+                    Value = gitHubToken
+                });
+            }
+            
 
             var vcsResponse = TeamCityClient.CreateVcsRoot(createVcs);
 
-            var createEmptyBuild = new CreateBuildConfig { Locator = "Id:" + createProjResponse.Id, Name = "Build" };
+            var createEmptyBuild = new CreateBuildConfig { Locator = "id:" + createProjResponse.Id, Name = "Build" };
             var emptyBuildConfigResponse = TeamCityClient.CreateBuildConfig(createEmptyBuild);
             var attachRequest = new AttachVcsEntries
             {
-                BuildTypeLocator = "Id:" + emptyBuildConfigResponse.Id,
+                BuildTypeLocator = "id:" + emptyBuildConfigResponse.Id,
                 VcsRootEntries = new List<AttachVcsRootEntry>
                 {
                     new AttachVcsRootEntry
@@ -71,7 +85,7 @@ namespace CIWizard.ServiceInterface
             //Create build steps
             var npmStepRequest = new CreateBuildStep
             {
-                BuildTypeLocator = "Id:" + emptyBuildConfigResponse.Id,
+                BuildTypeLocator = "id:" + emptyBuildConfigResponse.Id,
                 Name = "NPM Install",
                 TypeId = BuidStepTypes.Npm,
                 StepProperies = new CreateBuildStepProperies
@@ -86,7 +100,7 @@ namespace CIWizard.ServiceInterface
                         new CreateBuildStepProperty
                         {
                             Name = "teamcity.build.workingDir",
-                            Value = "src/TechStacks/TechStacks"
+                            Value = request.WorkingDirectory
                         },
                         new CreateBuildStepProperty
                         {
