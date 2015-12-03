@@ -19,6 +19,15 @@
             getTeamCityConfigs: function () {
                 return $http.get('/user/configs');
             },
+            getTeamCityBuilds: function () {
+                return $http.get('/user/builds')
+            },
+            getTeamCityBuild: function (projectId) {
+                return $http.get('/user/builds/' + projectId)
+            },
+            getTeamCityProject: function (projectId) {
+                return $http.get('/user/projects/' + projectId);
+            },
             createTeamCityBuild: function (createTeamCityReq) {
                 return $http.post('/user/build', createTeamCityReq);
             }

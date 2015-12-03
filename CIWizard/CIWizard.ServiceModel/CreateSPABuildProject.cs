@@ -22,6 +22,6 @@ namespace CIWizard.ServiceModel
 
     public class CreateSpaBuildProjectResponse
     {
-        
+        public string ProjectId { get; set; }
     }
 }

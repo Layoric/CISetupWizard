@@ -23,7 +23,8 @@
                 <input type="text" class="form-control" ng-model="repoConfig.templateType" id="templateTypeTxt" />
             </div>
         </form>
-        <button type="button" class="btn btn-primary" ng-disabled="creating" ng-click="createBuild()">Add to TeamCity</button>
+        <button type="button" class="btn btn-primary" ng-disabled="creating || projectExists" ng-click="createBuild()">Add to TeamCity</button>
+        <button type="button" class="btn btn-danger" ng-disabled="!projectExists">Delete</button>
     </div>
     <div ng-show="ready && success">
         <div class="alert alert-success" role="alert">
@@ -31,5 +32,9 @@
             <span class="sr-only">Success:</span>
             TeamCity config created successfully!
         </div>
+    </div>
+    <div>
+        <span ng-bind="buildStatus"></span>
+        <span ng-bind="buildLastUpdate"></span>
     </div>
 </div>

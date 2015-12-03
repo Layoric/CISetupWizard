@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
 using CIWizard.ServiceModel;
 using ServiceStack;
 using ServiceStack.TeamCityClient;
+using ServiceStack.TeamCityClient.Types;
 
 namespace CIWizard.ServiceInterface
 {
@@ -11,23 +14,142 @@ namespace CIWizard.ServiceInterface
 
         public CreateSpaBuildProjectResponse Post(CreateSpaBuildProject request)
         {
-            var response = new CreateSpaBuildProjectResponse();
             var session = SessionAs<AuthUserSession>();
             var gitHubToken = session.GetGitHubAccessToken();
-            var createProject = new CreateProject
+
+            var createProjResponse = CreateTeamCityProject(request);
+
+            var vcsResponse = CreateVcsRoot(request, createProjResponse, gitHubToken);
+
+            var createEmptyBuild = new CreateBuildConfig { Locator = "id:" + createProjResponse.Id, Name = "Build" };
+            var emptyBuildConfigResponse = TeamCityClient.CreateBuildConfig(createEmptyBuild);
+
+            AttachVcsToProject(emptyBuildConfigResponse, vcsResponse);
+
+            CreateNpmBuildStep(request, emptyBuildConfigResponse);
+
+            return new CreateSpaBuildProjectResponse
             {
-                Name = request.Name,
-                ParentProject = new ProjectLocator
+                ProjectId = createProjResponse.Id
+            };
+        }
+
+        public GetTeamCityProjectDetailsResponse Get(GetTeamCityProjectDetails request)
+        {
+            GetProjectResponse teamCityResponse = null;
+            try
+            {
+                teamCityResponse = TeamCityClient.GetProject(new GetProject
                 {
-                    Locator = "id:_Root"
+                    Locator = "id:" + request.ProjectId
+                });
+            }
+            catch (WebException e)
+            {
+                if (e.HasStatus(HttpStatusCode.NotFound))
+                {
+                    throw HttpError.NotFound("Project not found");
+                }
+            }
+            if (teamCityResponse == null)
+            {
+                throw new HttpError(HttpStatusCode.InternalServerError, "Invalid response from TeamCity");
+            }
+            var proj = teamCityResponse.ProjectsResponse.Projects.FirstNonDefault();
+            var response = new GetTeamCityProjectDetailsResponse
+            {
+                Project = proj
+            };
+            return response;
+        }
+
+        public GetBuildStatusResponse Get(GetBuildStatus request)
+        {
+            GetBuildResponse builds;
+            try
+            {
+                builds = TeamCityClient.GetBuild(new GetBuild { BuildLocator = "project:id:" + request.ProjectId });
+            }
+            catch (WebException e)
+            {
+                if (e.HasStatus(HttpStatusCode.BadRequest))
+                {
+                    throw HttpError.NotFound("Project Not found");
+                }
+                throw;
+            }
+            return new GetBuildStatusResponse
+            {
+                Status = builds.Status,
+                LastUpdate = builds.State == "finished" ? DateTime.Parse(builds.FinishDate) : DateTime.Parse(builds.StartDate)
+            };
+        }
+
+        private CreateBuildStepResponse CreateNpmBuildStep(CreateSpaBuildProject request,
+            CreateBuildConfigResponse buildConfigResponse)
+        {
+            var npmStepRequest = new CreateBuildStep
+            {
+                BuildTypeLocator = "id:" + buildConfigResponse.Id,
+                Name = "NPM Install",
+                TypeId = BuidStepTypes.Npm,
+                StepProperies = new CreateBuildStepProperies
+                {
+                    Properties = new List<CreateBuildStepProperty>
+                    {
+                        new CreateBuildStepProperty
+                        {
+                            Name = "npm_commands",
+                            Value = "install\ninstall bower\ninstall grunt\ninstall grunt-cli"
+                        },
+                        new CreateBuildStepProperty
+                        {
+                            Name = "teamcity.build.workingDir",
+                            Value = request.WorkingDirectory
+                        },
+                        new CreateBuildStepProperty
+                        {
+                            Name = "teamcity.step.mode",
+                            Value = "default"
+                        }
+                    }
                 }
             };
-            var createProjResponse = TeamCityClient.CreateProject(createProject);
+
+            var npmStepResponse = TeamCityClient.CreateBuildStep(npmStepRequest);
+            return npmStepResponse;
+        }
+
+        private AttachVcsEntryResponse AttachVcsToProject(CreateBuildConfigResponse emptyBuildConfigResponse,
+            CreateVcsRootResponse vcsResponse)
+        {
+            var attachRequest = new AttachVcsEntries
+            {
+                BuildTypeLocator = "id:" + emptyBuildConfigResponse.Id,
+                VcsRootEntries = new List<AttachVcsRootEntry>
+                {
+                    new AttachVcsRootEntry
+                    {
+                        Id = vcsResponse.Id,
+                        VcsRoot = new AttachVcsRoot
+                        {
+                            Id = vcsResponse.Id
+                        }
+                    }
+                }
+            };
+            var attachResponse = TeamCityClient.AttachVcsEntries(attachRequest);
+            return attachResponse;
+        }
+
+        private CreateVcsRootResponse CreateVcsRoot(CreateSpaBuildProject request, CreateProjectResponse createProjResponse,
+            string gitHubToken)
+        {
             var createVcs = new CreateVcsRoot
             {
                 Name = "GitHub_{0}".Fmt(request.Name),
                 VcsName = VcsRootTypes.Git,
-                Project = new CreateVcsRootProject { Id = createProjResponse.Id },
+                Project = new CreateVcsRootProject {Id = createProjResponse.Id},
                 Properties = new CreateVcsRootProperties
                 {
                     Properties = new List<CreateVcsRootProperty>
@@ -59,62 +181,36 @@ namespace CIWizard.ServiceInterface
                     Value = gitHubToken
                 });
             }
-            
+
 
             var vcsResponse = TeamCityClient.CreateVcsRoot(createVcs);
-
-            var createEmptyBuild = new CreateBuildConfig { Locator = "id:" + createProjResponse.Id, Name = "Build" };
-            var emptyBuildConfigResponse = TeamCityClient.CreateBuildConfig(createEmptyBuild);
-            var attachRequest = new AttachVcsEntries
-            {
-                BuildTypeLocator = "id:" + emptyBuildConfigResponse.Id,
-                VcsRootEntries = new List<AttachVcsRootEntry>
-                {
-                    new AttachVcsRootEntry
-                    {
-                        Id = vcsResponse.Id,
-                        VcsRoot = new AttachVcsRoot
-                        {
-                            Id = vcsResponse.Id
-                        }
-                    }
-                }
-            };
-            var attachResponse = TeamCityClient.AttachVcsEntries(attachRequest);
-
-            //Create build steps
-            var npmStepRequest = new CreateBuildStep
-            {
-                BuildTypeLocator = "id:" + emptyBuildConfigResponse.Id,
-                Name = "NPM Install",
-                TypeId = BuidStepTypes.Npm,
-                StepProperies = new CreateBuildStepProperies
-                {
-                    Properties = new List<CreateBuildStepProperty>
-                    {
-                        new CreateBuildStepProperty
-                        {
-                            Name = "npm_commands",
-                            Value = "install\ninstall bower\ninstall grunt\ninstall grunt-cli"
-                        },
-                        new CreateBuildStepProperty
-                        {
-                            Name = "teamcity.build.workingDir",
-                            Value = request.WorkingDirectory
-                        },
-                        new CreateBuildStepProperty
-                        {
-                            Name = "teamcity.step.mode",
-                            Value = "default"
-                        }
-                    }
-                }
-            };
-
-            var npmStepResponse = TeamCityClient.CreateBuildStep(npmStepRequest);
-
-
-            return response;
+            return vcsResponse;
         }
+
+        private CreateProjectResponse CreateTeamCityProject(CreateSpaBuildProject request)
+        {
+            var createProject = new CreateProject
+            {
+                Name = request.Name,
+                ParentProject = new ProjectLocator
+                {
+                    Locator = "id:_Root"
+                }
+            };
+            var createProjResponse = TeamCityClient.CreateProject(createProject);
+            return createProjResponse;
+        }
+        
+    }
+
+    [Route("/user/projects/{ProjectId}")]
+    public class GetTeamCityProjectDetails
+    {
+        public string ProjectId { get; set; }
+    }
+
+    public class GetTeamCityProjectDetailsResponse
+    {
+        public ServiceStack.TeamCityClient.Types.Project Project { get; set; }
     }
 }

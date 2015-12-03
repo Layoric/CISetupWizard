@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CreateSPABuildProject.cs" />
+    <Compile Include="GetBuildStatus.cs" />
     <Compile Include="GetGitHubRepositories.cs" />
     <Compile Include="GetGitHubRepository.cs" />
     <Compile Include="GetSolutionDetails.cs" />

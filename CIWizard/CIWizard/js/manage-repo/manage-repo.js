@@ -5,8 +5,8 @@
         'local-services'
     ]);
 
-    module.controller('managerRepoCtrl', ['$scope', '$routeParams', 'localServices','$timeout',
-        function ($scope, $routeParams, localServices,$timeout) {
+    module.controller('managerRepoCtrl', ['$scope', '$routeParams', 'localServices',
+        function ($scope, $routeParams, localServices) {
             $scope.loadingUserRepo = true;
             $scope.loadingSolutionDetails = true;
             $scope.ready = false;
@@ -25,10 +25,25 @@
                 //Error, offer to specify alternate branch?
             });
 
+            localServices.getTeamCityProject($routeParams.repoName).then(function (response) {
+                $scope.projectExists = true;
+                $scope.currentProject = response.data.project;
+                localServices.getTeamCityBuild($routeParams.repoName).then(function (response) {
+                    $scope.buildConfigExists = true;
+                    $scope.buildStatus = response.data.status;
+                    $scope.buildLastUpdate = response.data.lastUpdate;
+                }, function (response) {
+                    // Do nothing, user hasn't created/managed build for this project yet.
+                });
+            }, function (response) {
+
+            });
+
+
             $scope.createBuild = function () {
                 $scope.creating = true;
                 var request = {
-                    name: $scope.repoConfig.projectName,
+                    name: $routeParams.repoName,
                     branch: $scope.repoConfig.branch,
                     repositoryUrl: $scope.repoConfig.repositoryUrl,
                     templateType: $scope.repoConfig.templateType,
@@ -43,6 +58,12 @@
                 }, function (response) {
                     $scope.creating = false;
                 });
-            }
+            };
+
+            $scope.$watch('success', function (newVal) {
+                if(newVal === true) {
+
+                }
+            })
         }]);
 })();
