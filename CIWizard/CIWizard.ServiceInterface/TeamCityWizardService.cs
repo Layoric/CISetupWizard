@@ -51,14 +51,32 @@ namespace CIWizard.ServiceInterface
                     throw HttpError.NotFound("Project not found");
                 }
             }
+
             if (teamCityResponse == null)
             {
                 throw new HttpError(HttpStatusCode.InternalServerError, "Invalid response from TeamCity");
             }
+
+            GetBuildResponse build = null;
+            try
+            {
+                build = TeamCityClient.GetBuild(new GetBuild { BuildLocator = "project:id:" + request.ProjectId });
+            }
+            catch (WebException e)
+            {
+                if (!e.HasStatus(HttpStatusCode.BadRequest))
+                    throw;
+            }
+
+            build = build ?? new GetBuildResponse();
+
             var proj = teamCityResponse.ProjectsResponse.Projects.FirstNonDefault();
             var response = new GetTeamCityProjectDetailsResponse
             {
-                Project = proj
+                Project = proj,
+                BuildNumber = build.Number,
+                BuildState = build.State,
+                BuildStatus = build.StatusText
             };
             return response;
         }
@@ -212,5 +230,8 @@ namespace CIWizard.ServiceInterface
     public class GetTeamCityProjectDetailsResponse
     {
         public ServiceStack.TeamCityClient.Types.Project Project { get; set; }
+        public string BuildNumber { get; set; }
+        public string BuildStatus { get; set; }
+        public string BuildState { get; set; }
     }
 }

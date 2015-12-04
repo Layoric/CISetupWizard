@@ -9,8 +9,8 @@ namespace ServiceStack.TeamCityClient
 {
     public class TcClient
     {
-        public JsonServiceClient ServiceClient { get; }
-        public TcXmlServiceClient XmlServiceClient { get; }
+        public JsonServiceClient ServiceClient { get; private set; }
+        public TcXmlServiceClient XmlServiceClient { get; private set; }
 
         public TcClient(string baseUrl, string userName, string password)
         {
@@ -23,54 +23,85 @@ namespace ServiceStack.TeamCityClient
             XmlServiceClient = new TcXmlServiceClient(baseUrl, userName, password) {StoreCookies = true};
         }
 
-        public GetProjectsResponse GetProjects() =>
-            ServiceClient.Get(new GetProjects());
+        public GetProjectsResponse GetProjects()
+        {
+            return ServiceClient.Get(new GetProjects());
+        }
 
-        public GetProjectResponse GetProject(GetProject request) =>
-            ServiceClient.Get(request);
+        public GetProjectResponse GetProject(GetProject request)
+        {
+            return ServiceClient.Get(request);
+        }
 
-        public GetVcsRootsResponse GetVcsRoots() =>
-            ServiceClient.Get(new GetVcsRoots());
+        public GetVcsRootsResponse GetVcsRoots()
+        {
+            return ServiceClient.Get(new GetVcsRoots());
+        }
 
-        public GetBuildsResponse GetBuilds() =>
-            ServiceClient.Get(new GetBuilds());
+        public GetBuildsResponse GetBuilds()
+        {
+            return ServiceClient.Get(new GetBuilds());
+        }
 
-        public GetBuildResponse GetBuild(GetBuild request) =>
-            ServiceClient.Get(request);
+        public GetBuildResponse GetBuild(GetBuild request)
+        {
+            return ServiceClient.Get(request);
+        }
 
-        public GetUsersResponse GetUsers() =>
-            ServiceClient.Get(new GetUsers());
+        public GetUsersResponse GetUsers()
+        {
+            return ServiceClient.Get(new GetUsers());
+        }
 
-        public GetUserResponse GetUser(GetUser request) =>
-            ServiceClient.Get(request);
+        public GetUserResponse GetUser(GetUser request)
+        {
+            return ServiceClient.Get(request);
+        }
 
-        public GetUserGroupsResponse GetUserGroups() =>
-            ServiceClient.Get(new GetUserGroups());
+        public GetUserGroupsResponse GetUserGroups()
+        {
+            return ServiceClient.Get(new GetUserGroups());
+        }
 
-        public GetUsersInGroupResponse GetUsersInGroup(GetUsersInGroup request) =>
-            ServiceClient.Get(request);
+        public GetUsersInGroupResponse GetUsersInGroup(GetUsersInGroup request)
+        {
+            return ServiceClient.Get(request);
+        }
 
-        public GetProjectBuildConfigsResponse GetProjectGetBuildConfigs(GetProjectBuildConfigs request) =>
-            ServiceClient.Get(request);
+        public GetProjectBuildConfigsResponse GetProjectGetBuildConfigs(GetProjectBuildConfigs request)
+        {
+            return ServiceClient.Get(request);
+        }
 
-        public CreateProjectResponse CreateProject(CreateProject project) => 
-            XmlServiceClient.Post(project);
+        public CreateProjectResponse CreateProject(CreateProject project)
+        {
+            return XmlServiceClient.Post(project);
+        }
 
-        public CreateBuildConfigResponse CreateBuildConfig(CreateBuildConfig buildConfig) =>
-            XmlServiceClient.Post(buildConfig);
+        public CreateBuildConfigResponse CreateBuildConfig(CreateBuildConfig buildConfig)
+        {
+            return XmlServiceClient.Post(buildConfig);
+        }
 
-        public void DeleteProject(DeleteProject request) =>
+        public void DeleteProject(DeleteProject request)
+        {
             XmlServiceClient.Delete(request);
+        }
 
-        public CreateVcsRootResponse CreateVcsRoot(CreateVcsRoot vcsRoot) =>
-            XmlServiceClient.Post(vcsRoot);
+        public CreateVcsRootResponse CreateVcsRoot(CreateVcsRoot vcsRoot)
+        {
+            return XmlServiceClient.Post(vcsRoot);
+        }
 
-        public AttachVcsEntryResponse AttachVcsEntries(AttachVcsEntries request) =>
-            XmlServiceClient.Put(request);
+        public AttachVcsEntryResponse AttachVcsEntries(AttachVcsEntries request)
+        {
+            return XmlServiceClient.Put(request);
+        }
 
-        public CreateBuildStepResponse CreateBuildStep(CreateBuildStep request) =>
-            XmlServiceClient.Post(request);
-
+        public CreateBuildStepResponse CreateBuildStep(CreateBuildStep request)
+        {
+            return XmlServiceClient.Post(request);
+        }
     }
 
     public class TcXmlServiceClient : XmlServiceClient
@@ -82,7 +113,10 @@ namespace ServiceStack.TeamCityClient
             Password = password;
         }
 
-        public override string Accept => "application/json";
+        public override string Accept
+        {
+            get { return "application/json"; }
+        }
 
         public override void SerializeToStream(IRequest requestContext, object request, Stream stream)
         {

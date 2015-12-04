@@ -29,6 +29,7 @@ bld/
 
 appsettings.txt
 .idea/
+wwwroot/
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
