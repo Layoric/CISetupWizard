@@ -91,12 +91,6 @@ module.exports = function (grunt) {
                 }
             }
         },
-        nugetrestore: {
-            restore: {
-                src: 'packages.config',
-                dest: '../../packages/'
-            }
-        },
         msdeploy: {
             pack: {
                 options: {
@@ -239,7 +233,6 @@ module.exports = function (grunt) {
 
     grunt.registerTask('01-run-tests', ['karma']);
     grunt.registerTask('02-package-server', [
-        'nugetrestore',
         'msbuild:release',
         'gulp:wwwroot-clean-dlls',
         'gulp:wwwroot-copy-bin',
