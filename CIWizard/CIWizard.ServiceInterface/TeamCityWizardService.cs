@@ -78,10 +78,10 @@ namespace CIWizard.ServiceInterface
 
             build = build ?? new GetBuildResponse();
 
-            var proj = teamCityResponse.ProjectsResponse.Projects.FirstNonDefault();
             var response = new GetTeamCityProjectDetailsResponse
             {
-                Project = proj,
+                ProjectName = teamCityResponse.Name,
+                ProjectId = teamCityResponse.Id,
                 BuildNumber = build.Number,
                 BuildState = build.State,
                 BuildStatus = build.StatusText
@@ -260,36 +260,4 @@ namespace CIWizard.ServiceInterface
         }
         
     }
-
-    [Route("/user/projects/{OwnerName}/{RepositoryName}")]
-    public class GetTeamCityProjectDetails : IReturn<GetTeamCityProjectDetailsResponse>
-    {
-        public string RepositoryName { get; set; }
-        public string OwnerName { get; set; }
-
-        public string ProjectId
-        {
-            get { return "SS_" + OwnerName + "_" + RepositoryName; }
-        }
-    }
-
-    public class GetTeamCityProjectDetailsResponse
-    {
-        public ServiceStack.TeamCityClient.Types.Project Project { get; set; }
-        public string BuildNumber { get; set; }
-        public string BuildStatus { get; set; }
-        public string BuildState { get; set; }
-    }
-
-    [Route("/user/projects")]
-    public class GetAllGeneratedTeamCityProjects : IReturn<GetAllGeneratedTeamCityProjectsResponse>
-    {
-
-    }
-
-    public class GetAllGeneratedTeamCityProjectsResponse
-    {
-        public List<GitHubRepository> Projects { get; set; } 
-    }
-
 }

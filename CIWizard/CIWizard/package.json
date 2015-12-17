@@ -6,7 +6,10 @@
     "author": "",
     "private": true,
     "license": "",
-    "repository": { },
+  "repository": { },
+  "scripts": {
+    "postinstall" : "bower install"
+  },
   "devDependencies": {
     "karma": "~0.12",
     "karma-jasmine": "~0.2.0",
@@ -14,7 +17,7 @@
     "karma-phantomjs-launcher": "~0.1.4",
     "karma-junit-reporter": "^0.2.2",
     "grunt-karma": "~0.8.3",
-	"grunt-gulp":"~0.1.0",
+	  "grunt-gulp":"~0.1.0",
     "grunt": "~0.4.5",
     "ssvs-utils": "~0.1.1",
     "grunt-msbuild": "~0.2.2",
