@@ -78,7 +78,7 @@ namespace CIWizard.ServiceInterface
 
     public static class GitHubHelper
     {
-        public const string GitHubApiGetReposUrl = "https://api.github.com/user/repos?access_token={0}&per_page={1}&visibility=all";
+        public const string GitHubApiGetReposUrl = "https://api.github.com/user/repos?access_token={0}&page={1}&per_page={2}&visibility=all";
         public const string GitHubApiGetRepoUrl = "https://api.github.com/repos/{1}/{2}?access_token={0}";
         public const string GitHubApiGetTreeUrl = "https://api.github.com/repos/{1}/{2}/git/trees/{3}?recursive=1&access_token={0}";
         public const string GitHubGitUrl = "https://github.com/{0}/{1}.git";
@@ -101,23 +101,47 @@ namespace CIWizard.ServiceInterface
             return repo;
         }
 
-        public static List<GitHubRepository> GetGitHubRepositories(string accessToken, int perPage = 200)
+        public static List<GitHubRepository> GetGitHubRepositories(string accessToken)
         {
-            var response = GitHubApiGetReposUrl.Fmt(accessToken, perPage.ToString()).GetJsonFromUrl(req =>
+            List<GitHubRepository> result = new List<GitHubRepository>();
+            int pageCallsMax = 5;
+            int currentPageCall = 1;
+            int maxPerPage = 100;
+            List<GitHubRepository> repos;
+            var response = GitHubApiGetReposUrl.Fmt(accessToken, currentPageCall, maxPerPage.ToString()).GetJsonFromUrl(req =>
             {
                 req.UserAgent = ".NET";
             });
 
-            List<GitHubRepository> repos;
-
             using (JsConfig
-                .With(propertyConvention: PropertyConvention.Lenient,
-                    emitLowercaseUnderscoreNames: true,
-                    emitCamelCaseNames: false))
+                    .With(propertyConvention: PropertyConvention.Lenient,
+                        emitLowercaseUnderscoreNames: true,
+                        emitCamelCaseNames: false))
             {
                 repos = response.FromJson<List<GitHubRepository>>();
             }
-            return repos;
+            result.AddRange(repos);
+
+            while (repos.Count == 100)
+            {
+                repos = new List<GitHubRepository>();
+                currentPageCall++;
+                response = GitHubApiGetReposUrl.Fmt(accessToken, currentPageCall.ToString(), maxPerPage.ToString()).GetJsonFromUrl(req =>
+                {
+                    req.UserAgent = ".NET";
+                });
+
+                using (JsConfig
+                    .With(propertyConvention: PropertyConvention.Lenient,
+                        emitLowercaseUnderscoreNames: true,
+                        emitCamelCaseNames: false))
+                {
+                    repos = response.FromJson<List<GitHubRepository>>();
+                }
+                result.AddRange(repos);
+            }
+
+            return result;
         }
 
         public static GetGitHubTreeResponse GetGithubFiles(string owner, string repoName, string accessToken, string branch = "master")

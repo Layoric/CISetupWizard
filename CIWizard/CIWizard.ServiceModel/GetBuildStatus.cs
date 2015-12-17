@@ -7,16 +7,22 @@ using ServiceStack;
 
 namespace CIWizard.ServiceModel
 {
-    [Route("/user/builds/{ProjectId}")]
+    [Route("/user/builds/{OwnerName}/{RepositoryName}")]
     public class GetBuildStatus
     {
-        public string ProjectId { get; set; }
+        public string RepositoryName { get; set; }
+        public string OwnerName { get; set; }
+
+        public string ProjectId
+        {
+            get { return "SS_" + OwnerName + "_" + RepositoryName; }
+        }
     }
 
     public class GetBuildStatusResponse
     {
         public string Status { get; set; }
-        public DateTime LastUpdate { get; set; }
+        public DateTime? LastUpdate { get; set; }
     }
 
     [Route("/user/builds")]

@@ -121,9 +121,6 @@
     <Content Include="js\team-city\team-city.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="tests\karma.conf.js" />
-    <Content Include="packages.config">
-      <SubType>Designer</SubType>
-    </Content>
     <Content Include="package.json" />
     <Content Include="bower.json" />
     <Content Include="wwwroot_build\README.txt" />
@@ -131,6 +128,7 @@
     <Content Include="wwwroot_build\package-and-deploy.bat" />
     <Content Include="wwwroot_build\deploy\appsettings.txt" />
     <Content Include="wwwroot_build\publish\config.json" />
+    <Content Include="packages.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

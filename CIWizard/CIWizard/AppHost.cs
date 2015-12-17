@@ -53,6 +53,8 @@ namespace CIWizard
                 
             });
 
+            JsConfig.DateHandler = DateHandler.ISO8601;
+
             this.Plugins.Add(new RazorFormat());
             Plugins.Add(new ValidationFeature());
             container.RegisterValidators(typeof(CreateSpaBuildProjectValidator).Assembly);

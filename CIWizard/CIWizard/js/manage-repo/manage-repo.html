@@ -35,6 +35,6 @@
     </div>
     <div>
         <span ng-bind="buildStatus"></span>
-        <span ng-bind="buildLastUpdate"></span>
+        <span ng-bind="buildLastUpdate | date: 'yyyy/MM/dd HH:mm'"></span>
     </div>
 </div>

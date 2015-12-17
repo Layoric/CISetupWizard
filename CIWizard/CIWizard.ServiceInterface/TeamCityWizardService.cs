@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Net;
 using CIWizard.ServiceModel;
+using CIWizard.ServiceModel.Types;
 using ServiceStack;
 using ServiceStack.TeamCityClient;
 using ServiceStack.TeamCityClient.Types;
@@ -60,11 +63,16 @@ namespace CIWizard.ServiceInterface
             GetBuildResponse build = null;
             try
             {
-                build = TeamCityClient.GetBuild(new GetBuild { BuildLocator = "project:id:" + request.ProjectId });
+                build = TeamCityClient.GetBuild(new GetBuild {BuildLocator = "project:id:" + request.ProjectId});
             }
             catch (WebException e)
             {
                 if (!e.HasStatus(HttpStatusCode.BadRequest))
+                    throw;
+            }
+            catch (WebServiceException wse)
+            {
+                if (!wse.IsAny400())
                     throw;
             }
 
@@ -79,6 +87,31 @@ namespace CIWizard.ServiceInterface
                 BuildStatus = build.StatusText
             };
             return response;
+        }
+
+        [Authenticate]
+        public object Get(GetAllGeneratedTeamCityProjects request)
+        {
+            var gitHubToken = SessionAs<AuthUserSession>().GetGitHubAccessToken();
+            var allTcProjs = TeamCityClient.GetProjects();
+            var allGhProjects = GitHubHelper.GetGitHubRepositories(gitHubToken);
+
+            // Generated projects are created with "SS_" prefix and end with project name, owners can vary
+            var gitHubRepositories =
+                allGhProjects.Where(x =>
+                {
+                    return allTcProjs.Projects.Any(y =>
+                    {
+                        if (!y.Id.StartsWith("SS_")) return false;
+                        string projName = y.Id.Substring(y.Id.LastIndexOf("_", StringComparison.Ordinal) + 1);
+                        return x.Name == projName;
+                    });
+                }).ToList();
+
+            return new GetAllGeneratedTeamCityProjectsResponse
+            {
+                Projects = gitHubRepositories
+            };
         }
 
         public GetBuildStatusResponse Get(GetBuildStatus request)
@@ -96,10 +129,16 @@ namespace CIWizard.ServiceInterface
                 }
                 throw;
             }
+            //Parse datetime from TeamCity
+            string pattern = "yyyyMMddTHHmmssK";
+            DateTime? startDateTime = DateTime.ParseExact(builds.StartDate, pattern, CultureInfo.InvariantCulture);
+            DateTime? finishDateTime = DateTime.ParseExact(builds.FinishDate, pattern, CultureInfo.InvariantCulture);
+
+
             return new GetBuildStatusResponse
             {
                 Status = builds.Status,
-                LastUpdate = builds.State == "finished" ? DateTime.Parse(builds.FinishDate) : DateTime.Parse(builds.StartDate)
+                LastUpdate = builds.State == "finished" ? finishDateTime : startDateTime
             };
         }
 
@@ -213,7 +252,8 @@ namespace CIWizard.ServiceInterface
                 ParentProject = new ProjectLocator
                 {
                     Locator = "id:_Root"
-                }
+                },
+                Id = "SS_" + request.OwnerName + "_" + request.Name
             };
             var createProjResponse = TeamCityClient.CreateProject(createProject);
             return createProjResponse;
@@ -221,10 +261,16 @@ namespace CIWizard.ServiceInterface
         
     }
 
-    [Route("/user/projects/{ProjectId}")]
-    public class GetTeamCityProjectDetails
+    [Route("/user/projects/{OwnerName}/{RepositoryName}")]
+    public class GetTeamCityProjectDetails : IReturn<GetTeamCityProjectDetailsResponse>
     {
-        public string ProjectId { get; set; }
+        public string RepositoryName { get; set; }
+        public string OwnerName { get; set; }
+
+        public string ProjectId
+        {
+            get { return "SS_" + OwnerName + "_" + RepositoryName; }
+        }
     }
 
     public class GetTeamCityProjectDetailsResponse
@@ -234,4 +280,16 @@ namespace CIWizard.ServiceInterface
         public string BuildStatus { get; set; }
         public string BuildState { get; set; }
     }
+
+    [Route("/user/projects")]
+    public class GetAllGeneratedTeamCityProjects : IReturn<GetAllGeneratedTeamCityProjectsResponse>
+    {
+
+    }
+
+    public class GetAllGeneratedTeamCityProjectsResponse
+    {
+        public List<GitHubRepository> Projects { get; set; } 
+    }
+
 }

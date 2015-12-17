@@ -25,13 +25,14 @@
                 //Error, offer to specify alternate branch?
             });
 
-            localServices.getTeamCityProject($routeParams.repoName).then(function (response) {
+            localServices.getTeamCityProject($routeParams.ownerName,$routeParams.repoName).then(function (response) {
                 $scope.projectExists = true;
                 $scope.currentProject = response.data.project;
-                localServices.getTeamCityBuild($routeParams.repoName).then(function (response) {
+                localServices.getTeamCityBuild($routeParams.ownerName,$routeParams.repoName).then(function (response) {
                     $scope.buildConfigExists = true;
                     $scope.buildStatus = response.data.status;
-                    $scope.buildLastUpdate = response.data.lastUpdate;
+                    var dt = new Date(response.data.lastUpdate);
+                    $scope.buildLastUpdate = dt.toLocaleDateString() + " " + dt.toLocaleTimeString();
                 }, function (response) {
                     // Do nothing, user hasn't created/managed build for this project yet.
                 });
@@ -44,6 +45,7 @@
                 $scope.creating = true;
                 var request = {
                     name: $routeParams.repoName,
+                    ownerName: $routeParams.ownerName,
                     branch: $scope.repoConfig.branch,
                     repositoryUrl: $scope.repoConfig.repositoryUrl,
                     templateType: $scope.repoConfig.templateType,

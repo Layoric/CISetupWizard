@@ -1,4 +1,4 @@
-<div>
+<div ng-show="teamCityConfigs && teamCityConfigs.length > 0">
     <h2>Active Configurations</h2>
     <table class="table table-striped">
         <thead>
@@ -10,9 +10,9 @@
         </thead>
         <tbody>
             <tr ng-repeat="tcConfig in teamCityConfigs">
-                <td><a href="#/repos/{{tcConfig.name}}" ng-bind="tcConfig.name"></a></td>
-                <td><a href="#/repos/{{tcConfig.name}}" ng-bind="tcConfig.status"></a></td>
-                <td><a href="#/repos/{{tcConfig.name}}" ng-bind="tcConfig.lastUpdated"></a></td>
+                <td><a href="#/manage/{{tcConfig.owner.login}}/{{tcConfig.name}}" ng-bind="tcConfig.name"></a></td>
+                <td><a href="#/manage/{{tcConfig.owner}}/{{tcConfig.name}}" ng-bind="tcConfig.status"></a></td>
+                <td><a href="#/manage/{{tcConfig.owner}}/{{tcConfig.name}}" ng-bind="tcConfig.lastUpdated | date: 'yyyy/MM/dd'"></a></td>
             </tr>
         </tbody>
     </table>

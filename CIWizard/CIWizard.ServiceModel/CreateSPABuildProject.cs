@@ -11,6 +11,7 @@ namespace CIWizard.ServiceModel
     public class CreateSpaBuildProject : IReturn<CreateSpaBuildProjectResponse>
     {
         public string Name { get; set; }
+        public string OwnerName { get; set; }
         public string RepositoryUrl { get; set; }
         public string SolutionPath { get; set; }
         public ServiceStackTemplateType TemplateType { get; set; }

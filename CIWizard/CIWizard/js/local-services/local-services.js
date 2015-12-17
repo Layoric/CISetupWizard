@@ -22,11 +22,14 @@
             getTeamCityBuilds: function () {
                 return $http.get('/user/builds')
             },
-            getTeamCityBuild: function (projectId) {
-                return $http.get('/user/builds/' + projectId)
+            getTeamCityBuild: function (owner, repoName) {
+                return $http.get('/user/builds/' + owner + "/" + repoName)
             },
-            getTeamCityProject: function (projectId) {
-                return $http.get('/user/projects/' + projectId);
+            getTeamCityProject: function (owner, repoName) {
+                return $http.get('/user/projects/' + owner + "/" + repoName);
+            },
+            getTeamCityProjects: function () {
+                return $http.get('/user/projects');
             },
             createTeamCityBuild: function (createTeamCityReq) {
                 return $http.post('/user/build', createTeamCityReq);
