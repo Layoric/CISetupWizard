@@ -29,7 +29,10 @@ namespace CIWizard.ServiceInterface
 
             AttachVcsToProject(emptyBuildConfigResponse, vcsResponse);
 
-            CreateNpmBuildStep(request, emptyBuildConfigResponse);
+            CreateNpmInstallStep(request, emptyBuildConfigResponse);
+            CreateBowerInstallStep(request, emptyBuildConfigResponse);
+            CreateNuGetRestoreStep(request, emptyBuildConfigResponse);
+            CreateGruntStep(request, emptyBuildConfigResponse);
 
             return new CreateSpaBuildProjectResponse
             {
@@ -96,22 +99,26 @@ namespace CIWizard.ServiceInterface
             var allTcProjs = TeamCityClient.GetProjects();
             var allGhProjects = GitHubHelper.GetGitHubRepositories(gitHubToken);
 
-            // Generated projects are created with "SS_" prefix and end with project name, owners can vary
-            var gitHubRepositories =
-                allGhProjects.Where(x =>
-                {
-                    return allTcProjs.Projects.Any(y =>
-                    {
-                        if (!y.Id.StartsWith("SS_")) return false;
-                        string projName = y.Id.Substring(y.Id.LastIndexOf("_", StringComparison.Ordinal) + 1);
-                        return x.Name == projName;
-                    });
-                }).ToList();
+            var configuredRepos = GetConfiguredRepos(allGhProjects, allTcProjs);
 
             return new GetAllGeneratedTeamCityProjectsResponse
             {
-                Projects = gitHubRepositories
+                Projects = configuredRepos
             };
+        }
+
+        private static List<GitHubRepository> GetConfiguredRepos(List<GitHubRepository> allGhProjects, GetProjectsResponse allTcProjs)
+        {
+            // Generated projects are created with "SS_" prefix and end with project name, owners can vary
+            return allGhProjects.Where(x =>
+            {
+                return allTcProjs.Projects.Any(y =>
+                {
+                    if (!y.Id.StartsWith("SS_")) return false;
+                    string projName = y.Id.Substring(y.Id.LastIndexOf("_", StringComparison.Ordinal) + 1);
+                    return x.Name == projName;
+                });
+            }).ToList();
         }
 
         public GetBuildStatusResponse Get(GetBuildStatus request)
@@ -134,7 +141,6 @@ namespace CIWizard.ServiceInterface
             DateTime? startDateTime = DateTime.ParseExact(builds.StartDate, pattern, CultureInfo.InvariantCulture);
             DateTime? finishDateTime = DateTime.ParseExact(builds.FinishDate, pattern, CultureInfo.InvariantCulture);
 
-
             return new GetBuildStatusResponse
             {
                 Status = builds.Status,
@@ -142,93 +148,53 @@ namespace CIWizard.ServiceInterface
             };
         }
 
-        private CreateBuildStepResponse CreateNpmBuildStep(CreateSpaBuildProject request,
+        private CreateBuildStepResponse CreateNpmInstallStep(CreateSpaBuildProject request,
             CreateBuildConfigResponse buildConfigResponse)
         {
-            var npmStepRequest = new CreateBuildStep
-            {
-                BuildTypeLocator = "id:" + buildConfigResponse.Id,
-                Name = "NPM Install",
-                TypeId = BuidStepTypes.Npm,
-                StepProperies = new CreateBuildStepProperies
-                {
-                    Properties = new List<CreateBuildStepProperty>
-                    {
-                        new CreateBuildStepProperty
-                        {
-                            Name = "npm_commands",
-                            Value = "install\ninstall bower\ninstall grunt\ninstall grunt-cli"
-                        },
-                        new CreateBuildStepProperty
-                        {
-                            Name = "teamcity.build.workingDir",
-                            Value = request.WorkingDirectory
-                        },
-                        new CreateBuildStepProperty
-                        {
-                            Name = "teamcity.step.mode",
-                            Value = "default"
-                        }
-                    }
-                }
-            };
-
-            var npmStepResponse = TeamCityClient.CreateBuildStep(npmStepRequest);
+            var npmStepResponse = TeamCityClient.CreateBuildStep(
+                TeamCityBuildSteps.GetNpmInstallStepRequest(buildConfigResponse.Id,request.WorkingDirectory));
             return npmStepResponse;
         }
 
-        private AttachVcsEntryResponse AttachVcsToProject(CreateBuildConfigResponse emptyBuildConfigResponse,
+        private AttachVcsEntryResponse AttachVcsToProject(CreateBuildConfigResponse buildConfigResponse,
             CreateVcsRootResponse vcsResponse)
         {
-            var attachRequest = new AttachVcsEntries
-            {
-                BuildTypeLocator = "id:" + emptyBuildConfigResponse.Id,
-                VcsRootEntries = new List<AttachVcsRootEntry>
-                {
-                    new AttachVcsRootEntry
-                    {
-                        Id = vcsResponse.Id,
-                        VcsRoot = new AttachVcsRoot
-                        {
-                            Id = vcsResponse.Id
-                        }
-                    }
-                }
-            };
-            var attachResponse = TeamCityClient.AttachVcsEntries(attachRequest);
+            var attachResponse = TeamCityClient.AttachVcsEntries(
+                TeamCityBuildSteps.GetAttachVcsEntriesRequest(buildConfigResponse.Id,vcsResponse.Id));
             return attachResponse;
+        }
+
+        private CreateBuildStepResponse CreateBowerInstallStep(CreateSpaBuildProject request,
+            CreateBuildConfigResponse buildConfigResponse)
+        {
+            var bowerInstallStep = TeamCityClient.CreateBuildStep(
+                TeamCityBuildSteps.GetBowerInstallBuildStep(buildConfigResponse.Id, request.WorkingDirectory));
+            return bowerInstallStep;
+        }
+
+        private CreateBuildStepResponse CreateNuGetRestoreStep(CreateSpaBuildProject request, CreateBuildConfigResponse buildConfigResponse)
+        {
+            var nuGetRestoreStep = TeamCityClient.CreateBuildStep(
+               TeamCityBuildSteps.GetNuGetRestoreBuildStep(buildConfigResponse.Id, request.SolutionPath));
+            return nuGetRestoreStep;
+        }
+
+        private CreateBuildStepResponse CreateGruntStep(CreateSpaBuildProject request,
+            CreateBuildConfigResponse buildConfigResponse)
+        {
+            var bowerInstallStep = TeamCityClient.CreateBuildStep(
+               TeamCityBuildSteps.GetGruntBuildStep(buildConfigResponse.Id, request.WorkingDirectory));
+            return bowerInstallStep;
         }
 
         private CreateVcsRootResponse CreateVcsRoot(CreateSpaBuildProject request, CreateProjectResponse createProjResponse,
             string gitHubToken)
         {
-            var createVcs = new CreateVcsRoot
-            {
-                Name = "GitHub_{0}".Fmt(request.Name),
-                VcsName = VcsRootTypes.Git,
-                Project = new CreateVcsRootProject {Id = createProjResponse.Id},
-                Properties = new CreateVcsRootProperties
-                {
-                    Properties = new List<CreateVcsRootProperty>
-                    {
-                        new CreateVcsRootProperty
-                        {
-                            Name = "url",
-                            Value = request.RepositoryUrl
-                        },
-                        new CreateVcsRootProperty
-                        {
-                            Name = "authMethod",
-                            Value = request.PrivateRepository ? "PASSWORD" : "ANONYMOUS"
-                        },
-                        new CreateVcsRootProperty
-                        {
-                            Name = "branch",
-                            Value = "refs/heads/{0}".Fmt(request.Branch ?? "master")
-                        }
-                    }
-                }
-            };
+            var createVcs = TeamCityBuildSteps.GetCreateVcsRootRequest(
+                request.ProjectName,
+                createProjResponse.Id,
+                request.RepositoryUrl,
+                request.PrivateRepository, request.Branch);
             // Use OAuth access_token as username as per https://github.com/blog/1270-easier-builds-and-deployments-using-git-over-https-and-oauth#using-oauth-with-git
             if (request.PrivateRepository)
             {
@@ -238,7 +204,6 @@ namespace CIWizard.ServiceInterface
                     Value = gitHubToken
                 });
             }
-
 
             var vcsResponse = TeamCityClient.CreateVcsRoot(createVcs);
             return vcsResponse;
@@ -258,6 +223,5 @@ namespace CIWizard.ServiceInterface
             var createProjResponse = TeamCityClient.CreateProject(createProject);
             return createProjResponse;
         }
-        
     }
 }

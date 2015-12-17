@@ -54,5 +54,6 @@ namespace ServiceStack.TeamCityClient
         public const string Npm = "jonnyzzz.npm";
         public const string CommandLine = "simpleRunner";
         public const string Grunt = "jonnyzzz.grunt";
+        public const string NuGetInstaller = "jb.nuget.installer";
     }
 }
