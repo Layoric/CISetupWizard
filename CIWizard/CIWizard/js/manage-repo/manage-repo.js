@@ -62,6 +62,12 @@
                 });
             };
 
+            $scope.deleteBuild = function () {
+                localServices.deleteTeamCityBuild($routeParams.ownerName,$routeParams.repoName).then(function (response) {
+                    $scope.projectExists = false;
+                })
+            };
+
             $scope.$watch('success', function (newVal) {
                 if(newVal === true) {
 

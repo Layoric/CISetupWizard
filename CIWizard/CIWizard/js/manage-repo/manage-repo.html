@@ -8,23 +8,32 @@
         <form>
             <div class="form-group">
                 <label for="solutionPathTxt">Solution Path</label>
-                <input type="text" class="form-control" ng-model="repoConfig.solutionPath" id="solutionPathTxt" />
+                <input type="text" class="form-control" ng-model="repoConfig.solutionPath" id="solutionPathTxt" ng-disabled="true" />
             </div>
             <div class="form-group">
                 <label for="branchTxt">Branch</label>
-                <input type="text" class="form-control" ng-model="repoConfig.branch" id="branchTxt" />
+                <input type="text" class="form-control" ng-model="repoConfig.branch" id="branchTxt" ng-disabled="true"/>
             </div>
             <div class="form-group">
                 <label for="gitUrlTxt">Git Url</label>
-                <input type="text" class="form-control" ng-model="repoConfig.repositoryUrl" id="gitUrlTxt" />
+                <input type="text" class="form-control" ng-model="repoConfig.repositoryUrl" id="gitUrlTxt" ng-disabled="true"/>
             </div>
             <div class="form-group">
                 <label for="templateTypeTxt">Template Type</label>
-                <input type="text" class="form-control" ng-model="repoConfig.templateType" id="templateTypeTxt" />
+                <input type="text" class="form-control" ng-model="repoConfig.templateType" id="templateTypeTxt" ng-disabled="true"/>
             </div>
         </form>
         <button type="button" class="btn btn-primary" ng-disabled="creating || projectExists" ng-click="createBuild()">Add to TeamCity</button>
-        <button type="button" class="btn btn-danger" ng-disabled="!projectExists">Delete</button>
+        <button type="button" class="btn btn-danger" ng-disabled="!projectExists" ng-click="deleteBuild()">Delete</button>
+    </div>
+    <br />
+    <div ng-show="projectExists">
+        <h3>Build Status</h3>
+        <div ng-class="{'alert-success' : buildStatus == 'SUCCESS', 'alert-danger' : buildStatus == 'FAILURE'}">
+            <span ng-show="!buildStatus">No build history available</span>
+            <span ng-bind="buildStatus"></span>
+            <span ng-bind="buildLastUpdate | date: 'yyyy/MM/dd HH:mm'"></span>
+        </div>
     </div>
     <div ng-show="ready && success">
         <div class="alert alert-success" role="alert">
@@ -32,9 +41,5 @@
             <span class="sr-only">Success:</span>
             TeamCity config created successfully!
         </div>
-    </div>
-    <div>
-        <span ng-bind="buildStatus"></span>
-        <span ng-bind="buildLastUpdate | date: 'yyyy/MM/dd HH:mm'"></span>
     </div>
 </div>

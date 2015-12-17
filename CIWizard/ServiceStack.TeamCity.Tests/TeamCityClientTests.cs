@@ -381,21 +381,21 @@ namespace ServiceStack.TeamCity.Tests
                 BuildTypeLocator = "id:" + emptyBuildConfigResponse.Id,
                 Name = "NPM Install",
                 TypeId = BuidStepTypes.Npm,
-                StepProperies = new CreateBuildStepProperies
+                StepProperies = new CreateTeamCityProperies
                 {
-                    Properties = new List<CreateBuildStepProperty>
+                    Properties = new List<CreateTeamCityProperty>
                     {
-                        new CreateBuildStepProperty
+                        new CreateTeamCityProperty
                         {
                             Name = "npm_commands",
                             Value = "install\ninstall bower\ninstall grunt\ninstall grunt-cli"
                         },
-                        new CreateBuildStepProperty
+                        new CreateTeamCityProperty
                         {
                             Name = "teamcity.build.workingDir",
                             Value = "src/TechStacks/TechStacks"
                         },
-                        new CreateBuildStepProperty
+                        new CreateTeamCityProperty
                         {
                             Name = "teamcity.step.mode",
                             Value = "default"

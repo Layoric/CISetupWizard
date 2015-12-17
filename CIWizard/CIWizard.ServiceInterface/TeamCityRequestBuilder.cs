@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CIWizard.ServiceModel;
+﻿using System.Collections.Generic;
 using ServiceStack;
 using ServiceStack.TeamCityClient;
 
 namespace CIWizard.ServiceInterface
 {
-    public static class TeamCityBuildSteps
+    public static class TeamCityRequestBuilder
     {
         public static CreateBuildStep GetNpmInstallStepRequest(string buildConfigId,string workingDirectory)
         {
@@ -18,21 +13,21 @@ namespace CIWizard.ServiceInterface
                 BuildTypeLocator = "id:" + buildConfigId,
                 Name = "NPM Install",
                 TypeId = BuidStepTypes.Npm,
-                StepProperies = new CreateBuildStepProperies
+                StepProperies = new CreateTeamCityProperies
                 {
-                    Properties = new List<CreateBuildStepProperty>
+                    Properties = new List<CreateTeamCityProperty>
                     {
-                        new CreateBuildStepProperty
+                        new CreateTeamCityProperty
                         {
                             Name = "npm_commands",
-                            Value = "install"
+                            Value = "install\ninstall grunt\ninstall grunt-cli"
                         },
-                        new CreateBuildStepProperty
+                        new CreateTeamCityProperty
                         {
                             Name = "teamcity.build.workingDir",
                             Value = workingDirectory
                         },
-                        new CreateBuildStepProperty
+                        new CreateTeamCityProperty
                         {
                             Name = "teamcity.step.mode",
                             Value = "default"
@@ -102,26 +97,26 @@ namespace CIWizard.ServiceInterface
                 BuildTypeLocator = "id:" + buildConfigId,
                 Name = "Bower Install",
                 TypeId = BuidStepTypes.CommandLine,
-                StepProperies = new CreateBuildStepProperies
+                StepProperies = new CreateTeamCityProperies
                 {
-                    Properties = new List<CreateBuildStepProperty>
+                    Properties = new List<CreateTeamCityProperty>
                     {
-                        new CreateBuildStepProperty
+                        new CreateTeamCityProperty
                         {
                             Name = "script.content",
                             Value = "bower install"
                         },
-                        new CreateBuildStepProperty
+                        new CreateTeamCityProperty
                         {
                             Name = "teamcity.build.workingDir",
                             Value = workingDirectory
                         },
-                        new CreateBuildStepProperty
+                        new CreateTeamCityProperty
                         {
                             Name = "teamcity.step.mode",
                             Value = "default"
                         },
-                        new CreateBuildStepProperty
+                        new CreateTeamCityProperty
                         {
                             Name = "use.custom.script",
                             Value = "true"
@@ -139,41 +134,41 @@ namespace CIWizard.ServiceInterface
                 BuildTypeLocator = "id:" + buildConfigId,
                 Name = "NuGet Restore",
                 TypeId = BuidStepTypes.NuGetInstaller,
-                StepProperies = new CreateBuildStepProperies
+                StepProperies = new CreateTeamCityProperies
                 {
-                    Properties = new List<CreateBuildStepProperty>
+                    Properties = new List<CreateTeamCityProperty>
                     {
-                        new CreateBuildStepProperty
+                        new CreateTeamCityProperty
                         {
                             Name = "nuget.path",
                             Value = "?NuGet.CommandLine.DEFAULT.nupkg"
                         },
-                        new CreateBuildStepProperty
+                        new CreateTeamCityProperty
                         {
                             Name = "nuget.updatePackages.mode",
                             Value = "sln"
                         },
-                        new CreateBuildStepProperty
+                        new CreateTeamCityProperty
                         {
                             Name = "nuget.use.restore",
                             Value = "restore"
                         },
-                        new CreateBuildStepProperty
+                        new CreateTeamCityProperty
                         {
                             Name = "nugetCustomPath",
                             Value = "?NuGet.CommandLine.DEFAULT.nupkg"
                         },
-                        new CreateBuildStepProperty
+                        new CreateTeamCityProperty
                         {
                             Name = "nugetPathSelector",
                             Value = "?NuGet.CommandLine.DEFAULT.nupkg"
                         },
-                        new CreateBuildStepProperty
+                        new CreateTeamCityProperty
                         {
                             Name = "sln.path",
                             Value = nugetSlnPath
                         },
-                        new CreateBuildStepProperty
+                        new CreateTeamCityProperty
                         {
                             Name = "teamcity.step.mode",
                             Value = "default"
@@ -191,31 +186,31 @@ namespace CIWizard.ServiceInterface
                 BuildTypeLocator = "id:" + buildConfigId,
                 Name = "Grunt build",
                 TypeId = BuidStepTypes.Grunt,
-                StepProperies = new CreateBuildStepProperies
+                StepProperies = new CreateTeamCityProperies
                 {
-                    Properties = new List<CreateBuildStepProperty>
+                    Properties = new List<CreateTeamCityProperty>
                     {
-                        new CreateBuildStepProperty
+                        new CreateTeamCityProperty
                         {
                             Name = "jonnyzzz.grunt.file",
                             Value = workingDirectory + "/gruntfile.js"
                         },
-                        new CreateBuildStepProperty
+                        new CreateTeamCityProperty
                         {
                             Name = "jonnyzzz.grunt.mode",
                             Value = "npm"
                         },
-                        new CreateBuildStepProperty
+                        new CreateTeamCityProperty
                         {
                             Name = "jonnyzzz.grunt.tasks",
                             Value = "build"
                         },
-                        new CreateBuildStepProperty
+                        new CreateTeamCityProperty
                         {
                             Name = "teamcity.build.workingDir",
                             Value = workingDirectory
                         },
-                        new CreateBuildStepProperty
+                        new CreateTeamCityProperty
                         {
                             Name = "teamcity.step.mode",
                             Value = "default"
@@ -224,6 +219,27 @@ namespace CIWizard.ServiceInterface
                 }
             };
             return bowerInstallBuildStep;
+        }
+
+        public static CreateTrigger GetCreateVcsTrigger(string buildConfigId)
+        {
+            var createTrigger = new CreateTrigger
+            {
+                BuildTypeLocator = "id:" + buildConfigId,
+                TypeId = "vcsTrigger",
+                TriggerProperties = new CreateTeamCityProperies
+                {
+                    Properties = new List<CreateTeamCityProperty>
+                    {
+                        new CreateTeamCityProperty
+                        {
+                            Name = "quietPeriodMode",
+                            Value = "DO_NOT_USE"
+                        }
+                    }
+                }
+            };
+            return createTrigger;
         }
     }
 }

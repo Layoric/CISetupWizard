@@ -28,6 +28,7 @@ namespace CIWizard.ServiceInterface
             var emptyBuildConfigResponse = TeamCityClient.CreateBuildConfig(createEmptyBuild);
 
             AttachVcsToProject(emptyBuildConfigResponse, vcsResponse);
+            CreateVcsTrigger(emptyBuildConfigResponse);
 
             CreateNpmInstallStep(request, emptyBuildConfigResponse);
             CreateBowerInstallStep(request, emptyBuildConfigResponse);
@@ -38,6 +39,11 @@ namespace CIWizard.ServiceInterface
             {
                 ProjectId = createProjResponse.Id
             };
+        }
+
+        public void Delete(DeleteTeamCityProject request)
+        {
+            TeamCityClient.DeleteProject(new DeleteProject { Locator = "id:" + request.ProjectId});
         }
 
         public GetTeamCityProjectDetailsResponse Get(GetTeamCityProjectDetails request)
@@ -152,7 +158,7 @@ namespace CIWizard.ServiceInterface
             CreateBuildConfigResponse buildConfigResponse)
         {
             var npmStepResponse = TeamCityClient.CreateBuildStep(
-                TeamCityBuildSteps.GetNpmInstallStepRequest(buildConfigResponse.Id,request.WorkingDirectory));
+                TeamCityRequestBuilder.GetNpmInstallStepRequest(buildConfigResponse.Id,request.WorkingDirectory));
             return npmStepResponse;
         }
 
@@ -160,22 +166,29 @@ namespace CIWizard.ServiceInterface
             CreateVcsRootResponse vcsResponse)
         {
             var attachResponse = TeamCityClient.AttachVcsEntries(
-                TeamCityBuildSteps.GetAttachVcsEntriesRequest(buildConfigResponse.Id,vcsResponse.Id));
+                TeamCityRequestBuilder.GetAttachVcsEntriesRequest(buildConfigResponse.Id,vcsResponse.Id));
             return attachResponse;
+        }
+
+        private CreateTriggerResponse CreateVcsTrigger(CreateBuildConfigResponse buildConfigResponse)
+        {
+            var triggerResponse =
+                TeamCityClient.CreateTrigger(TeamCityRequestBuilder.GetCreateVcsTrigger(buildConfigResponse.Id));
+            return triggerResponse;
         }
 
         private CreateBuildStepResponse CreateBowerInstallStep(CreateSpaBuildProject request,
             CreateBuildConfigResponse buildConfigResponse)
         {
             var bowerInstallStep = TeamCityClient.CreateBuildStep(
-                TeamCityBuildSteps.GetBowerInstallBuildStep(buildConfigResponse.Id, request.WorkingDirectory));
+                TeamCityRequestBuilder.GetBowerInstallBuildStep(buildConfigResponse.Id, request.WorkingDirectory));
             return bowerInstallStep;
         }
 
         private CreateBuildStepResponse CreateNuGetRestoreStep(CreateSpaBuildProject request, CreateBuildConfigResponse buildConfigResponse)
         {
             var nuGetRestoreStep = TeamCityClient.CreateBuildStep(
-               TeamCityBuildSteps.GetNuGetRestoreBuildStep(buildConfigResponse.Id, request.SolutionPath));
+               TeamCityRequestBuilder.GetNuGetRestoreBuildStep(buildConfigResponse.Id, request.SolutionPath));
             return nuGetRestoreStep;
         }
 
@@ -183,14 +196,14 @@ namespace CIWizard.ServiceInterface
             CreateBuildConfigResponse buildConfigResponse)
         {
             var bowerInstallStep = TeamCityClient.CreateBuildStep(
-               TeamCityBuildSteps.GetGruntBuildStep(buildConfigResponse.Id, request.WorkingDirectory));
+               TeamCityRequestBuilder.GetGruntBuildStep(buildConfigResponse.Id, request.WorkingDirectory));
             return bowerInstallStep;
         }
 
         private CreateVcsRootResponse CreateVcsRoot(CreateSpaBuildProject request, CreateProjectResponse createProjResponse,
             string gitHubToken)
         {
-            var createVcs = TeamCityBuildSteps.GetCreateVcsRootRequest(
+            var createVcs = TeamCityRequestBuilder.GetCreateVcsRootRequest(
                 request.ProjectName,
                 createProjResponse.Id,
                 request.RepositoryUrl,
@@ -222,6 +235,18 @@ namespace CIWizard.ServiceInterface
             };
             var createProjResponse = TeamCityClient.CreateProject(createProject);
             return createProjResponse;
+        }
+    }
+
+    [Route("/user/projects/{OwnerName}/{RepositoryName}", Verbs = "DELETE")]
+    public class DeleteTeamCityProject
+    {
+        public string RepositoryName { get; set; }
+        public string OwnerName { get; set; }
+
+        public string ProjectId
+        {
+            get { return "SS_" + OwnerName + "_" + RepositoryName; }
         }
     }
 }

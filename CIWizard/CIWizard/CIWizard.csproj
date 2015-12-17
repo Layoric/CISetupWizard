@@ -61,10 +61,6 @@
       <HintPath>..\..\packages\ServiceStack.OrmLite.4.0.46\lib\net45\ServiceStack.OrmLite.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="ServiceStack.Razor, Version=4.0.46.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\ServiceStack.Razor.4.0.46\lib\net45\ServiceStack.Razor.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="ServiceStack.Redis, Version=4.0.46.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\ServiceStack.Redis.4.0.46\lib\net40\ServiceStack.Redis.dll</HintPath>
       <Private>True</Private>
@@ -88,10 +84,6 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=e06fbc6124f57c43, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\ServiceStack.Razor.4.0.46\lib\net45\System.Web.Razor.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
@@ -103,7 +95,7 @@
   <ItemGroup>
     <Content Include="css\app.css" />
     <Content Include="gruntfile.js" />
-    <Content Include="default.cshtml" />
+    <Content Include="default.html" />
     <Content Include="img\github_normal.png" />
     <Content Include="img\Loading_icon.gif" />
     <Content Include="img\Octocat.jpg" />

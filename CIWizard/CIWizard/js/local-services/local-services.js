@@ -33,6 +33,9 @@
             },
             createTeamCityBuild: function (createTeamCityReq) {
                 return $http.post('/user/build', createTeamCityReq);
+            },
+            deleteTeamCityBuild: function (owner, repoName) {
+                return $http.delete('/user/projects/' + owner + "/" + repoName);
             }
         }
     }])

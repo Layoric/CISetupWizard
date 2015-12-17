@@ -23,7 +23,7 @@ namespace ServiceStack.TeamCityClient
         public string TypeId { get; set; }
 
         [XmlElement(ElementName = "properties")]
-        public CreateBuildStepProperies StepProperies { get; set; }
+        public CreateTeamCityProperies StepProperies { get; set; }
     }
 
     public class CreateBuildStepResponse
@@ -33,15 +33,15 @@ namespace ServiceStack.TeamCityClient
 
     [XmlSerializerFormat]
     [XmlType(TypeName = "properties", Namespace = "")]
-    public class CreateBuildStepProperies
+    public class CreateTeamCityProperies
     {
         [XmlElement(ElementName = "property")]
-        public List<CreateBuildStepProperty> Properties { get; set; } 
+        public List<CreateTeamCityProperty> Properties { get; set; } 
     }
 
     [XmlSerializerFormat]
     [XmlType(TypeName = "property", Namespace = "")]
-    public class CreateBuildStepProperty
+    public class CreateTeamCityProperty
     {
         [XmlAttribute(AttributeName = "name")]
         public string Name { get; set; }

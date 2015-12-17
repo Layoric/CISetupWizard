@@ -59,6 +59,7 @@
     <Compile Include="CreateBuildConfig.cs" />
     <Compile Include="CreateBuildSteps.cs" />
     <Compile Include="CreateProject.cs" />
+    <Compile Include="CreateTrigger.cs" />
     <Compile Include="CreateVcsRoot.cs" />
     <Compile Include="DeleteProject.cs" />
     <Compile Include="GetBuild.cs" />

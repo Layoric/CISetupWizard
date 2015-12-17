@@ -78,7 +78,7 @@
     <Compile Include="MyServices.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SessionInfoService.cs" />
-    <Compile Include="TeamCityBuildSteps.cs" />
+    <Compile Include="TeamCityRequestBuilder.cs" />
     <Compile Include="TeamCityWizardService.cs" />
   </ItemGroup>
   <ItemGroup>
