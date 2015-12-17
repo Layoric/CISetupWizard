@@ -24,16 +24,25 @@ namespace CIWizard.ServiceInterface
 
             var vcsResponse = CreateVcsRoot(request, createProjResponse, gitHubToken);
 
-            var createEmptyBuild = new CreateBuildConfig { Locator = "id:" + createProjResponse.Id, Name = "Build" };
-            var emptyBuildConfigResponse = TeamCityClient.CreateBuildConfig(createEmptyBuild);
+            var createBuildConfig = new CreateBuildConfig
+            {
+                Locator = "id:" + createProjResponse.Id,
+                Name = "Build"
+            };
+            var buildConfigResponse = TeamCityClient.CreateBuildConfig(createBuildConfig);
+            TeamCityClient.UpdateBuildConfigSettings(new UpdateBuildConfigSetting
+            {
+                Locator = "id:" + buildConfigResponse.Id,
+                SettingId = "artifactRules",
+                Value = request.WorkingDirectory + "/wwwroot => " + request.WorkingDirectory + "/wwwroot"
+            });
+            AttachVcsToProject(buildConfigResponse, vcsResponse);
+            CreateVcsTrigger(buildConfigResponse);
 
-            AttachVcsToProject(emptyBuildConfigResponse, vcsResponse);
-            CreateVcsTrigger(emptyBuildConfigResponse);
-
-            CreateNpmInstallStep(request, emptyBuildConfigResponse);
-            CreateBowerInstallStep(request, emptyBuildConfigResponse);
-            CreateNuGetRestoreStep(request, emptyBuildConfigResponse);
-            CreateGruntStep(request, emptyBuildConfigResponse);
+            CreateNpmInstallStep(request, buildConfigResponse);
+            CreateBowerInstallStep(request, buildConfigResponse);
+            CreateNuGetRestoreStep(request, buildConfigResponse);
+            CreateGruntStep(request, buildConfigResponse);
 
             return new CreateSpaBuildProjectResponse
             {

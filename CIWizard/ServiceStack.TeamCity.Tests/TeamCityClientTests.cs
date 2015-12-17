@@ -381,7 +381,7 @@ namespace ServiceStack.TeamCity.Tests
                 BuildTypeLocator = "id:" + emptyBuildConfigResponse.Id,
                 Name = "NPM Install",
                 TypeId = BuidStepTypes.Npm,
-                StepProperies = new CreateTeamCityProperies
+                StepProperties = new CreateTeamCityProperties
                 {
                     Properties = new List<CreateTeamCityProperty>
                     {

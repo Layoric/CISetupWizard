@@ -107,6 +107,15 @@ namespace ServiceStack.TeamCityClient
         {
             return XmlServiceClient.Post(request);
         }
+
+        public UpdateBuildConfigSettingResponse UpdateBuildConfigSettings(UpdateBuildConfigSetting request)
+        {
+            var url = XmlServiceClient.BaseUri + request.ToPutUrl();
+            return url.PutStringToUrl(request.Value, "application/xml", "*/*", webRequest =>
+            {
+                webRequest.CookieContainer = XmlServiceClient.CookieContainer;
+            }).FromJson<UpdateBuildConfigSettingResponse>();
+        }
     }
 
     public class TcXmlServiceClient : XmlServiceClient

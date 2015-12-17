@@ -13,7 +13,7 @@ namespace CIWizard.ServiceInterface
                 BuildTypeLocator = "id:" + buildConfigId,
                 Name = "NPM Install",
                 TypeId = BuidStepTypes.Npm,
-                StepProperies = new CreateTeamCityProperies
+                StepProperties = new CreateTeamCityProperties
                 {
                     Properties = new List<CreateTeamCityProperty>
                     {
@@ -97,7 +97,7 @@ namespace CIWizard.ServiceInterface
                 BuildTypeLocator = "id:" + buildConfigId,
                 Name = "Bower Install",
                 TypeId = BuidStepTypes.CommandLine,
-                StepProperies = new CreateTeamCityProperies
+                StepProperties = new CreateTeamCityProperties
                 {
                     Properties = new List<CreateTeamCityProperty>
                     {
@@ -134,7 +134,7 @@ namespace CIWizard.ServiceInterface
                 BuildTypeLocator = "id:" + buildConfigId,
                 Name = "NuGet Restore",
                 TypeId = BuidStepTypes.NuGetInstaller,
-                StepProperies = new CreateTeamCityProperies
+                StepProperties = new CreateTeamCityProperties
                 {
                     Properties = new List<CreateTeamCityProperty>
                     {
@@ -186,7 +186,7 @@ namespace CIWizard.ServiceInterface
                 BuildTypeLocator = "id:" + buildConfigId,
                 Name = "Grunt build",
                 TypeId = BuidStepTypes.Grunt,
-                StepProperies = new CreateTeamCityProperies
+                StepProperties = new CreateTeamCityProperties
                 {
                     Properties = new List<CreateTeamCityProperty>
                     {
@@ -227,7 +227,7 @@ namespace CIWizard.ServiceInterface
             {
                 BuildTypeLocator = "id:" + buildConfigId,
                 TypeId = "vcsTrigger",
-                TriggerProperties = new CreateTeamCityProperies
+                TriggerProperties = new CreateTeamCityProperties
                 {
                     Properties = new List<CreateTeamCityProperty>
                     {

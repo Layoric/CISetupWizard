@@ -20,7 +20,7 @@ namespace ServiceStack.TeamCityClient
         public string TypeId { get; set; }
 
         [XmlElement(ElementName = "properties")]
-        public CreateTeamCityProperies TriggerProperties { get; set; }
+        public CreateTeamCityProperties TriggerProperties { get; set; }
     }
 
     public class CreateTriggerResponse

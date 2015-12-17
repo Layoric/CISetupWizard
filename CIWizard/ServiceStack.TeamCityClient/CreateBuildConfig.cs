@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.Xml.Serialization;
 using ServiceStack.TeamCityClient.Types;
@@ -27,6 +28,9 @@ namespace ServiceStack.TeamCityClient
 
         [XmlAttribute(AttributeName = "shareVCSRoots")]
         public bool ShareVcsRoot { get; set; }
+
+        [XmlElement(ElementName = "properties")]
+        public CreateTeamCityProperties Settings { get; set; }
     }
 
     [DataContract]
