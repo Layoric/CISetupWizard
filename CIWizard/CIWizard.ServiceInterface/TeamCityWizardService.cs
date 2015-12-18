@@ -24,6 +24,8 @@ namespace CIWizard.ServiceInterface
 
             var vcsResponse = CreateVcsRoot(request, createProjResponse, gitHubToken);
 
+            IisHelper.AddSite(request.Name);
+
             var createBuildConfig = new CreateBuildConfig
             {
                 Locator = "id:" + createProjResponse.Id,
