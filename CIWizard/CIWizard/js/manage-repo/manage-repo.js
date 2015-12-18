@@ -19,6 +19,8 @@
 
             localServices.getSolutionDetails($routeParams.ownerName, $routeParams.repoName).then(function (response) {
                 $scope.repoConfig = response.data;
+                //Default username
+                $scope.repoConfig.msDeployUserName = "Administrator";
                 $scope.loadingSolutionDetails = false;
                 $scope.ready = !$scope.loadingUserRepo && !$scope.loadingSolutionDetails;
             }, function (response) {
@@ -52,7 +54,9 @@
                     workingDirectory: $scope.repoConfig.projectWorkingDirectory,
                     projectName: $scope.repoConfig.projectName,
                     privateRepository: $scope.repoConfig.privateRepository,
-                    solutionPath: $scope.repoConfig.solutionPath
+                    solutionPath: $scope.repoConfig.solutionPath,
+                    msDeployUserName: $scope.repoConfig.msDeployUserName,
+                    msDeployPassword: $scope.repoConfig.msDeployPassword
                 };
                 localServices.createTeamCityBuild(request).then(function (response) {
                     $scope.success = true;

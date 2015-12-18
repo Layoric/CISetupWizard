@@ -20,7 +20,7 @@ namespace CIWizard.ServiceInterface
                         new CreateTeamCityProperty
                         {
                             Name = "npm_commands",
-                            Value = "install\ninstall grunt\ninstall grunt-cli"
+                            Value = "install\ninstall grunt\ninstall grunt-cli\ninstall bower"
                         },
                         new CreateTeamCityProperty
                         {
@@ -219,6 +219,118 @@ namespace CIWizard.ServiceInterface
                 }
             };
             return bowerInstallBuildStep;
+        }
+
+        public static CreateBuildStep GetCopyAppSettingsStep(string buildConfigId, string workingDirectory, string ownerName, string repoName)
+        {
+            var copyAppSettingsStep = new CreateBuildStep
+            {
+                BuildTypeLocator = "id:" + buildConfigId,
+                Name = "Copy App Settings",
+                TypeId = BuidStepTypes.CommandLine,
+                StepProperties = new CreateTeamCityProperties
+                {
+                    Properties = new List<CreateTeamCityProperty>
+                    {
+                        new CreateTeamCityProperty
+                        {
+                            Name = "script.content",
+                            Value = "xcopy C:\\src\\{0}\\{1}\\appsettings.txt %teamcity.build.workingDir%\\wwwroot /Y".Fmt(ownerName,repoName)
+                        },
+                        new CreateTeamCityProperty
+                        {
+                            Name = "teamcity.build.workingDir",
+                            Value = workingDirectory
+                        },
+                        new CreateTeamCityProperty
+                        {
+                            Name = "teamcity.step.mode",
+                            Value = "default"
+                        },
+                        new CreateTeamCityProperty
+                        {
+                            Name = "use.custom.script",
+                            Value = "true"
+                        },
+                    }
+                }
+            };
+            return copyAppSettingsStep;
+        }
+
+        public static CreateBuildStep GetWebDeployPackStep(string buildConfigId, string workingDirectory)
+        {
+            var getWebDeployPackStep = new CreateBuildStep
+            {
+                BuildTypeLocator = "id:" + buildConfigId,
+                Name = "Web Deploy - Pack",
+                TypeId = BuidStepTypes.CommandLine,
+                StepProperties = new CreateTeamCityProperties
+                {
+                    Properties = new List<CreateTeamCityProperty>
+                    {
+                        new CreateTeamCityProperty
+                        {
+                            Name = "command.executable",
+                            Value = "%env.MSDeployPath%\\msdeploy.exe"
+                        },
+                        new CreateTeamCityProperty
+                        {
+                            Name = "command.parameters",
+                            Value = "-verb:sync -source:iisApp=\"%teamcity.build.workingDir%\\wwwroot\" -dest:package=\"%teamcity.build.workingDir%\\webapp.zip\""
+                        },
+                        new CreateTeamCityProperty
+                        {
+                            Name = "teamcity.build.workingDir",
+                            Value = workingDirectory
+                        },
+                        new CreateTeamCityProperty
+                        {
+                            Name = "teamcity.step.mode",
+                            Value = "default"
+                        }
+                    }
+                }
+            };
+            return getWebDeployPackStep;
+        }
+
+        public static CreateBuildStep GetWebDeployPush(string buildConfigId, string workingDirectory,string appName, string endpoint)
+        {
+            var getWebDeployPush = new CreateBuildStep
+            {
+                BuildTypeLocator = "id:" + buildConfigId,
+                Name = "Web Deploy - Push",
+                TypeId = BuidStepTypes.CommandLine,
+                StepProperties = new CreateTeamCityProperties
+                {
+                    Properties = new List<CreateTeamCityProperty>
+                    {
+                        new CreateTeamCityProperty
+                        {
+                            Name = "command.executable",
+                            Value = "%env.MSDeployPath%\\msdeploy.exe"
+                        },
+                        new CreateTeamCityProperty
+                        {
+                            Name = "command.parameters",
+                            Value = "-verb:sync -source:package=\"%teamcity.build.workingDir%\\webapp.zip\" -dest:iisApp=\"{0}\",wmsvc={1},username=%ss.msdeploy.username%,password=%ss.msdeploy.password% -allowUntrusted=true"
+                                .Fmt(appName,endpoint)
+                        },
+                        new CreateTeamCityProperty
+                        {
+                            Name = "teamcity.build.workingDir",
+                            Value = workingDirectory
+                        },
+                        new CreateTeamCityProperty
+                        {
+                            Name = "teamcity.step.mode",
+                            Value = "default"
+                        }
+                    }
+                }
+            };
+            return getWebDeployPush;
         }
 
         public static CreateTrigger GetCreateVcsTrigger(string buildConfigId)

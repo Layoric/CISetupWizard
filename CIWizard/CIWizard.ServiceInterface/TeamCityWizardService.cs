@@ -36,6 +36,33 @@ namespace CIWizard.ServiceInterface
                 SettingId = "artifactRules",
                 Value = request.WorkingDirectory + "/wwwroot => " + request.WorkingDirectory + "/wwwroot"
             });
+
+            TeamCityClient.UpdateBuildConfigParameters(new UpdateBuildConfigParameters
+            {
+                Locator = "id:" + buildConfigResponse.Id,
+                Properties = new List<CreateTeamCityBuildParameter>
+                {
+                    new CreateTeamCityBuildParameter
+                    {
+                        Name = "ss.msdeploy.username",
+                        Value = request.MsDeployUserName,
+                        Type = new CreateTeamCityBuildParameterType
+                        {
+                            Value = "text validationMode='any' display='normal'"
+                        }
+                    },
+                    new CreateTeamCityBuildParameter
+                    {
+                        Name = "ss.msdeploy.password",
+                        Value = request.MsDeployPassword,
+                        Type = new CreateTeamCityBuildParameterType
+                        {
+                            Value = "password display='normal'"
+                        }
+                    }
+                }
+            });
+
             AttachVcsToProject(buildConfigResponse, vcsResponse);
             CreateVcsTrigger(buildConfigResponse);
 
@@ -43,6 +70,10 @@ namespace CIWizard.ServiceInterface
             CreateBowerInstallStep(request, buildConfigResponse);
             CreateNuGetRestoreStep(request, buildConfigResponse);
             CreateGruntStep(request, buildConfigResponse);
+
+            CreateCopyAppSettingsStep(request, buildConfigResponse);
+            CreateWebDeployPackStep(request, buildConfigResponse);
+            CreateWebDeployPushStep(request, buildConfigResponse);
 
             return new CreateSpaBuildProjectResponse
             {
@@ -204,9 +235,33 @@ namespace CIWizard.ServiceInterface
         private CreateBuildStepResponse CreateGruntStep(CreateSpaBuildProject request,
             CreateBuildConfigResponse buildConfigResponse)
         {
-            var bowerInstallStep = TeamCityClient.CreateBuildStep(
+            var gruntStep = TeamCityClient.CreateBuildStep(
                TeamCityRequestBuilder.GetGruntBuildStep(buildConfigResponse.Id, request.WorkingDirectory));
-            return bowerInstallStep;
+            return gruntStep;
+        }
+
+        private CreateBuildStepResponse CreateCopyAppSettingsStep(CreateSpaBuildProject request,
+            CreateBuildConfigResponse buildConfigResponse)
+        {
+            var copyAppSettingsStep = TeamCityClient.CreateBuildStep(
+               TeamCityRequestBuilder.GetCopyAppSettingsStep(buildConfigResponse.Id, request.WorkingDirectory, request.OwnerName,request.Name));
+            return copyAppSettingsStep;
+        }
+
+        private CreateBuildStepResponse CreateWebDeployPackStep(CreateSpaBuildProject request,
+            CreateBuildConfigResponse buildConfigResponse)
+        {
+            var createWebDeployPackStep = TeamCityClient.CreateBuildStep(
+               TeamCityRequestBuilder.GetWebDeployPackStep(buildConfigResponse.Id, request.WorkingDirectory));
+            return createWebDeployPackStep;
+        }
+
+        private CreateBuildStepResponse CreateWebDeployPushStep(CreateSpaBuildProject request,
+            CreateBuildConfigResponse buildConfigResponse)
+        {
+            var createWebDeployPushStep = TeamCityClient.CreateBuildStep(
+               TeamCityRequestBuilder.GetWebDeployPush(buildConfigResponse.Id, request.WorkingDirectory,request.Name,"localhost"));
+            return createWebDeployPushStep;
         }
 
         private CreateVcsRootResponse CreateVcsRoot(CreateSpaBuildProject request, CreateProjectResponse createProjResponse,

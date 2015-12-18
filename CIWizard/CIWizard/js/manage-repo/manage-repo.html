@@ -22,6 +22,14 @@
                 <label for="templateTypeTxt">Template Type</label>
                 <input type="text" class="form-control" ng-model="repoConfig.templateType" id="templateTypeTxt" ng-disabled="true"/>
             </div>
+            <div class="form-group">
+                <label for="msDeployUsernameTxt">MSDeploy Username</label>
+                <input type="text" class="form-control" ng-model="repoConfig.msDeployUserName" id="msDeployUsernameTxt" />
+            </div>
+            <div class="form-group">
+                <label for="msDeployPasswordTxt">MSDeploy Password</label>
+                <input type="password" class="form-control" ng-model="repoConfig.msDeployPassword" id="msDeployPasswordTxt"/>
+            </div>
         </form>
         <button type="button" class="btn btn-primary" ng-disabled="creating || projectExists" ng-click="createBuild()">Add to TeamCity</button>
         <button type="button" class="btn btn-danger" ng-disabled="!projectExists" ng-click="deleteBuild()">Delete</button>

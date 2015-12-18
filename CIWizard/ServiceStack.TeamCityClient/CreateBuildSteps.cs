@@ -49,6 +49,37 @@ namespace ServiceStack.TeamCityClient
         public string Value { get; set; }
     }
 
+
+    [XmlSerializerFormat]
+    [XmlType(TypeName = "properties", Namespace = "")]
+    public class CreateTeamBuildParameters
+    {
+        [XmlElement(ElementName = "property")]
+        public List<CreateTeamCityBuildParameter> Properties { get; set; }
+    }
+
+    [XmlSerializerFormat]
+    [XmlType(TypeName = "property", Namespace = "")]
+    public class CreateTeamCityBuildParameter
+    {
+        [XmlAttribute(AttributeName = "name")]
+        public string Name { get; set; }
+        [XmlAttribute(AttributeName = "value")]
+        public string Value { get; set; }
+        [XmlAttribute(AttributeName = "own")]
+        public bool Own { get; set; }
+        [XmlElement(ElementName = "type")]
+        public CreateTeamCityBuildParameterType Type { get; set; }
+    }
+
+    [XmlSerializerFormat]
+    [XmlType(TypeName = "type", Namespace = "")]
+    public class CreateTeamCityBuildParameterType
+    {
+        [XmlAttribute(AttributeName = "rawValue")]
+        public string Value { get; set; }
+    }
+
     public class BuidStepTypes
     {
         public const string Npm = "jonnyzzz.npm";

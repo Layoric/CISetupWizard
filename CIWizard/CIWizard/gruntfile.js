@@ -160,8 +160,8 @@ module.exports = function (grunt) {
                 ], done);
             },
             'wwwroot-copy-partials': function () {
-                var partialsDest = webRoot + 'partials';
-                return gulp.src('partials/**/*.html')
+                var partialsDest = webRoot + 'js';
+                return gulp.src('js/**/*.html')
                     .pipe(newer(partialsDest))
                     .pipe(gulp.dest(partialsDest));
             },
@@ -173,34 +173,11 @@ module.exports = function (grunt) {
                 return gulp.src('./img/**/*')
                     .pipe(gulp.dest(webRoot + 'img/'));
             },
-            'wwwroot-bundle': function () {
-                var assets = useref.assets({ searchPath: './' });
-
-                return gulp.src('./**/*.cshtml')
-                    .pipe(assets)
-                    .pipe(gulpif('*.js', uglify()))
-                    .pipe(gulpif('*.css', minifyCss()))
-                    .pipe(assets.restore())
-                    .pipe(useref())
-                    .pipe(htmlBuild({
-                        jqueryCdn: function (block) {
-                            pipeTemplate(block, '<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>');
-                        },
-                        bootstrapCss: function (block) {
-                            pipeTemplate(block, '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.1/css/bootstrap.min.css" />');
-                        },
-                        bootstrapJs: function (block) {
-                            pipeTemplate(block, '<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.1/js/bootstrap.min.js"></script>');
-                        }
-                    }))
-                    .pipe(gulp.dest(webRoot));
-            },
             'wwwroot-bundle-html': function () {
                 var assets = useref.assets({ searchPath: './' });
 
                 return gulp.src('./default.html')
                     .pipe(assets)
-                    .pipe(gulpif('*.js', uglify()))
                     .pipe(gulpif('*.css', minifyCss()))
                     .pipe(assets.restore())
                     .pipe(useref())
@@ -246,7 +223,6 @@ module.exports = function (grunt) {
         'gulp:wwwroot-copy-partials',
         'gulp:wwwroot-copy-fonts',
         'gulp:wwwroot-copy-images',
-        'gulp:wwwroot-bundle',
         'gulp:wwwroot-bundle-html'
     ]);
 

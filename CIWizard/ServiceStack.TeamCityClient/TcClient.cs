@@ -110,11 +110,17 @@ namespace ServiceStack.TeamCityClient
 
         public UpdateBuildConfigSettingResponse UpdateBuildConfigSettings(UpdateBuildConfigSetting request)
         {
+            // Settings are different...
             var url = XmlServiceClient.BaseUri + request.ToPutUrl();
             return url.PutStringToUrl(request.Value, "application/xml", "*/*", webRequest =>
             {
                 webRequest.CookieContainer = XmlServiceClient.CookieContainer;
             }).FromJson<UpdateBuildConfigSettingResponse>();
+        }
+
+        public UpdateBuildConfigParametersResponse UpdateBuildConfigParameters(UpdateBuildConfigParameters request)
+        {
+            return XmlServiceClient.Put(request);
         }
     }
 

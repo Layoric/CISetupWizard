@@ -25,4 +25,21 @@ namespace ServiceStack.TeamCityClient
         
     }
 
+    [XmlSerializerFormat]
+    [XmlType(TypeName = "properties", Namespace = "")]
+    [Route("/buildTypes/{Locator}/parameters", "PUT")]
+    public class UpdateBuildConfigParameters :  IReturn<UpdateBuildConfigParametersResponse>
+    {
+        [XmlIgnore]
+        public string Locator { get; set; }
+
+        [XmlElement(ElementName = "property")]
+        public List<CreateTeamCityBuildParameter> Properties { get; set; }
+    }
+
+    public class UpdateBuildConfigParametersResponse
+    {
+        
+    }
+
 }
