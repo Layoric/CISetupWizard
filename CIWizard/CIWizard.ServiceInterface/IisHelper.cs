@@ -13,6 +13,7 @@ namespace CIWizard.ServiceInterface
     {
         public static void AddSite(string siteName)
         {
+            //using (var sm = new ServerManager("C:\\Windows\\System32\\inetsrv\\config\\applicationHost.config")) // IIS Express is default, force IIS localhost
             using (var sm = new ServerManager())
             {
                 var invalidChars = SiteCollection.InvalidSiteNameCharacters();
@@ -20,33 +21,38 @@ namespace CIWizard.ServiceInterface
                 {
                     throw new Exception(string.Format("Invalid Site Name: {0}", siteName));
                 }
-                AddAppPool(sm, siteName + "_AppPool", "v4.0", ManagedPipelineMode.Integrated);
-                if (sm.Sites["siteName"] != null)
+                var appPool = AddAppPool(sm, siteName, "v4.0", ManagedPipelineMode.Integrated);
+                if (sm.Sites[siteName] != null)
                 {
-                    return;
+                    //return;
+                    sm.Sites[siteName].Delete();
+                    sm.CommitChanges();
                 }
-                string path = "C:\\inetpub\\{0}\\".Fmt(siteName);
+                string path = "C:\\inetpub\\{0}".Fmt(siteName);
                 if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path);
                 }
                 var site = sm.Sites.Add(siteName, path, 80);
                 site.ServerAutoStart = true;
+                site.ApplicationDefaults.ApplicationPoolName = appPool.Name;
+                // Set HostName info for binding
 
                 sm.CommitChanges();
             }
         }
 
-        private static void AddAppPool(ServerManager sm, string poolName, string runtimeVersion,
+        private static ApplicationPool AddAppPool(ServerManager sm, string poolName, string runtimeVersion,
                 ManagedPipelineMode piplineMode)
         {
             if (sm.ApplicationPools.FirstOrDefault(x => x.Name == poolName) != null)
             {
-                return;
+                return sm.ApplicationPools.FirstOrDefault(x => x.Name == poolName);
             } 
             var appPool = sm.ApplicationPools.Add(poolName);
             appPool.ManagedRuntimeVersion = runtimeVersion;
             appPool.ManagedPipelineMode = piplineMode;
+            return appPool;
         }
     }
 }
