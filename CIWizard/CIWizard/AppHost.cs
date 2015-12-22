@@ -12,6 +12,8 @@ using ServiceStack;
 using ServiceStack.Auth;
 using ServiceStack.Configuration;
 using ServiceStack.FluentValidation;
+using ServiceStack.Logging;
+using ServiceStack.Logging.EventLog;
 using ServiceStack.OrmLite;
 using ServiceStack.TeamCityClient;
 using ServiceStack.Text;
@@ -54,6 +56,8 @@ namespace CIWizard
                 AddRedirectParamsToQueryString = true,
                 
             });
+
+            LogManager.LogFactory = new EventLogFactory("CIWizard","Application");
 
             JsConfig.DateHandler = DateHandler.ISO8601;
             Plugins.Add(new ValidationFeature());

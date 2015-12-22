@@ -24,9 +24,7 @@ namespace CIWizard.ServiceInterface
                 var appPool = AddAppPool(sm, siteName, "v4.0", ManagedPipelineMode.Integrated);
                 if (sm.Sites[siteName] != null)
                 {
-                    //return;
-                    sm.Sites[siteName].Delete();
-                    sm.CommitChanges();
+                    return;
                 }
                 string path = "C:\\inetpub\\{0}".Fmt(siteName);
                 if (!Directory.Exists(path))

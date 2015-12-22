@@ -6,6 +6,7 @@ using System.Net;
 using CIWizard.ServiceModel;
 using CIWizard.ServiceModel.Types;
 using ServiceStack;
+using ServiceStack.Logging;
 using ServiceStack.TeamCityClient;
 using ServiceStack.TeamCityClient.Types;
 
@@ -14,6 +15,7 @@ namespace CIWizard.ServiceInterface
     public class TeamCityWizardService : Service
     {
         public TcClient TeamCityClient { get; set; }
+        public static ILog Log = LogManager.GetLogger(typeof(TeamCityWizardService));
 
         public CreateSpaBuildProjectResponse Post(CreateSpaBuildProject request)
         {
@@ -24,7 +26,15 @@ namespace CIWizard.ServiceInterface
 
             var vcsResponse = CreateVcsRoot(request, createProjResponse, gitHubToken);
 
-            IisHelper.AddSite(request.Name);
+            try
+            {
+                IisHelper.AddSite(request.Name);
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message,e);
+            }
+            
 
             var createBuildConfig = new CreateBuildConfig
             {
@@ -106,9 +116,9 @@ namespace CIWizard.ServiceInterface
                     Locator = "id:" + request.ProjectId
                 });
             }
-            catch (WebException e)
+            catch (WebServiceException e)
             {
-                if (e.HasStatus(HttpStatusCode.NotFound))
+                if (e.IsAny400())
                 {
                     throw HttpError.NotFound("Project not found");
                 }
@@ -283,12 +293,18 @@ namespace CIWizard.ServiceInterface
                 request.RepositoryUrl,
                 request.PrivateRepository, request.Branch);
             // Use OAuth access_token as username as per https://github.com/blog/1270-easier-builds-and-deployments-using-git-over-https-and-oauth#using-oauth-with-git
+            // Password of 'x-oauth-basic' also must be used based on how TeamCity creates the git clone command
             if (request.PrivateRepository)
             {
                 createVcs.Properties.Properties.Add(new CreateVcsRootProperty
                 {
                     Name = "username",
                     Value = gitHubToken
+                });
+                createVcs.Properties.Properties.Add(new CreateVcsRootProperty
+                {
+                    Name = "secure:password",
+                    Value = "x-oauth-basic"
                 });
             }
 

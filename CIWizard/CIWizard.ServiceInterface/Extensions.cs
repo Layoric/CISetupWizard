@@ -49,9 +49,10 @@ namespace CIWizard.ServiceInterface
             string slnPath = trees.GetSolutionTree().Path;
             if (slnPath == null)
                 return null;
-            int indexOfFwdSlash = slnPath.IndexOf("/", StringComparison.Ordinal);
-            string projName = slnPath.Substring(indexOfFwdSlash == -1 ? 0 : indexOfFwdSlash,
-            slnPath.LastIndexOf(".", StringComparison.Ordinal));
+            int lastIndexOfFwdSlash = slnPath.LastIndexOf("/", StringComparison.Ordinal);
+            int start = lastIndexOfFwdSlash == -1 ? 0 : lastIndexOfFwdSlash;
+            string projName = slnPath.Substring(start + 1,
+            slnPath.LastIndexOf(".", StringComparison.Ordinal) - start - 1);
             return projName;
         }
 
