@@ -122,6 +122,11 @@ namespace ServiceStack.TeamCityClient
         {
             return XmlServiceClient.Put(request);
         }
+
+        public TriggerBuildResponse TriggerBuild(TriggerBuild triggerBuild)
+        {
+            return XmlServiceClient.Post(triggerBuild);
+        }
     }
 
     public class TcXmlServiceClient : XmlServiceClient

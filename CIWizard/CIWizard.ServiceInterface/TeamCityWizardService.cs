@@ -77,6 +77,14 @@ namespace CIWizard.ServiceInterface
             CreateWebDeployPackStep(request, buildConfigResponse);
             CreateWebDeployPushStep(request, buildConfigResponse);
 
+            TeamCityClient.TriggerBuild(new TriggerBuild
+            {
+                TriggerBuildType = new TriggerBuildType
+                {
+                    Id = buildConfigResponse.Id
+                }
+            });
+
             return new CreateSpaBuildProjectResponse
             {
                 ProjectId = createProjResponse.Id

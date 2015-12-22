@@ -6,6 +6,9 @@ namespace CIWizard.ServiceInterface
 {
     public static class TeamCityRequestBuilder
     {
+        private const string BuildConfigWorkingDirPropertyName = "teamcity.build.workingDir";
+        private const string StepModePropertyName = "teamcity.step.mode";
+
         public static CreateBuildStep GetNpmInstallStepRequest(string buildConfigId,string workingDirectory)
         {
             var npmStepRequest = new CreateBuildStep
@@ -13,27 +16,10 @@ namespace CIWizard.ServiceInterface
                 BuildTypeLocator = "id:" + buildConfigId,
                 Name = "NPM Install",
                 TypeId = BuidStepTypes.Npm,
-                StepProperties = new CreateTeamCityProperties
-                {
-                    Properties = new List<CreateTeamCityProperty>
-                    {
-                        new CreateTeamCityProperty
-                        {
-                            Name = "npm_commands",
-                            Value = "install\ninstall grunt\ninstall grunt-cli\ninstall bower"
-                        },
-                        new CreateTeamCityProperty
-                        {
-                            Name = "teamcity.build.workingDir",
-                            Value = workingDirectory
-                        },
-                        new CreateTeamCityProperty
-                        {
-                            Name = "teamcity.step.mode",
-                            Value = "default"
-                        }
-                    }
-                }
+                StepProperties = new CreateTeamCityProperties()
+                    .AddTeamCityProperty("npm_commands", "install\ninstall grunt\ninstall grunt-cli\ninstall bower")
+                    .AddTeamCityProperty(BuildConfigWorkingDirPropertyName,workingDirectory)
+                    .AddTeamCityProperty(StepModePropertyName, "default")
             };
             return npmStepRequest;
         }
@@ -97,32 +83,11 @@ namespace CIWizard.ServiceInterface
                 BuildTypeLocator = "id:" + buildConfigId,
                 Name = "Bower Install",
                 TypeId = BuidStepTypes.CommandLine,
-                StepProperties = new CreateTeamCityProperties
-                {
-                    Properties = new List<CreateTeamCityProperty>
-                    {
-                        new CreateTeamCityProperty
-                        {
-                            Name = "script.content",
-                            Value = "bower install"
-                        },
-                        new CreateTeamCityProperty
-                        {
-                            Name = "teamcity.build.workingDir",
-                            Value = workingDirectory
-                        },
-                        new CreateTeamCityProperty
-                        {
-                            Name = "teamcity.step.mode",
-                            Value = "default"
-                        },
-                        new CreateTeamCityProperty
-                        {
-                            Name = "use.custom.script",
-                            Value = "true"
-                        },
-                    }
-                }
+                StepProperties = new CreateTeamCityProperties()
+                    .AddTeamCityProperty("script.content", "bower install")
+                    .AddTeamCityProperty(BuildConfigWorkingDirPropertyName,workingDirectory)
+                    .AddTeamCityProperty(StepModePropertyName, "default")
+                    .AddTeamCityProperty("use.custom.script","true")
             };
             return bowerInstallBuildStep;
         }
@@ -134,47 +99,14 @@ namespace CIWizard.ServiceInterface
                 BuildTypeLocator = "id:" + buildConfigId,
                 Name = "NuGet Restore",
                 TypeId = BuidStepTypes.NuGetInstaller,
-                StepProperties = new CreateTeamCityProperties
-                {
-                    Properties = new List<CreateTeamCityProperty>
-                    {
-                        new CreateTeamCityProperty
-                        {
-                            Name = "nuget.path",
-                            Value = "?NuGet.CommandLine.DEFAULT.nupkg"
-                        },
-                        new CreateTeamCityProperty
-                        {
-                            Name = "nuget.updatePackages.mode",
-                            Value = "sln"
-                        },
-                        new CreateTeamCityProperty
-                        {
-                            Name = "nuget.use.restore",
-                            Value = "restore"
-                        },
-                        new CreateTeamCityProperty
-                        {
-                            Name = "nugetCustomPath",
-                            Value = "?NuGet.CommandLine.DEFAULT.nupkg"
-                        },
-                        new CreateTeamCityProperty
-                        {
-                            Name = "nugetPathSelector",
-                            Value = "?NuGet.CommandLine.DEFAULT.nupkg"
-                        },
-                        new CreateTeamCityProperty
-                        {
-                            Name = "sln.path",
-                            Value = nugetSlnPath
-                        },
-                        new CreateTeamCityProperty
-                        {
-                            Name = "teamcity.step.mode",
-                            Value = "default"
-                        }
-                    }
-                }
+                StepProperties = new CreateTeamCityProperties()
+                    .AddTeamCityProperty("nuget.path", "?NuGet.CommandLine.DEFAULT.nupkg")
+                    .AddTeamCityProperty("nuget.updatePackages.mode", "sln")
+                    .AddTeamCityProperty("nuget.use.restore", "restore")
+                    .AddTeamCityProperty("nugetCustomPath", "?NuGet.CommandLine.DEFAULT.nupkg")
+                    .AddTeamCityProperty("nugetPathSelector", "?NuGet.CommandLine.DEFAULT.nupkg")
+                    .AddTeamCityProperty("sln.path",nugetSlnPath)
+                    .AddTeamCityProperty(StepModePropertyName, "default")
             };
             return nuGetRestoreBuildStep;
         }
@@ -186,37 +118,12 @@ namespace CIWizard.ServiceInterface
                 BuildTypeLocator = "id:" + buildConfigId,
                 Name = "Grunt build",
                 TypeId = BuidStepTypes.Grunt,
-                StepProperties = new CreateTeamCityProperties
-                {
-                    Properties = new List<CreateTeamCityProperty>
-                    {
-                        new CreateTeamCityProperty
-                        {
-                            Name = "jonnyzzz.grunt.file",
-                            Value = workingDirectory + "/gruntfile.js"
-                        },
-                        new CreateTeamCityProperty
-                        {
-                            Name = "jonnyzzz.grunt.mode",
-                            Value = "npm"
-                        },
-                        new CreateTeamCityProperty
-                        {
-                            Name = "jonnyzzz.grunt.tasks",
-                            Value = "build"
-                        },
-                        new CreateTeamCityProperty
-                        {
-                            Name = "teamcity.build.workingDir",
-                            Value = workingDirectory
-                        },
-                        new CreateTeamCityProperty
-                        {
-                            Name = "teamcity.step.mode",
-                            Value = "default"
-                        }
-                    }
-                }
+                StepProperties = new CreateTeamCityProperties()
+                    .AddTeamCityProperty("jonnyzzz.grunt.file", workingDirectory + "/gruntfile.js")
+                    .AddTeamCityProperty("jonnyzzz.grunt.mode", "npm")
+                    .AddTeamCityProperty("jonnyzzz.grunt.tasks","build")
+                    .AddTeamCityProperty(BuildConfigWorkingDirPropertyName, workingDirectory)
+                    .AddTeamCityProperty(StepModePropertyName, "default")
             };
             return bowerInstallBuildStep;
         }
@@ -228,32 +135,14 @@ namespace CIWizard.ServiceInterface
                 BuildTypeLocator = "id:" + buildConfigId,
                 Name = "Copy App Settings",
                 TypeId = BuidStepTypes.CommandLine,
-                StepProperties = new CreateTeamCityProperties
-                {
-                    Properties = new List<CreateTeamCityProperty>
-                    {
-                        new CreateTeamCityProperty
-                        {
-                            Name = "script.content",
-                            Value = "xcopy C:\\src\\{0}\\{1}\\appsettings.txt %teamcity.build.workingDir%\\wwwroot /Y".Fmt(ownerName,repoName)
-                        },
-                        new CreateTeamCityProperty
-                        {
-                            Name = "teamcity.build.workingDir",
-                            Value = workingDirectory
-                        },
-                        new CreateTeamCityProperty
-                        {
-                            Name = "teamcity.step.mode",
-                            Value = "default"
-                        },
-                        new CreateTeamCityProperty
-                        {
-                            Name = "use.custom.script",
-                            Value = "true"
-                        },
-                    }
-                }
+                StepProperties = new CreateTeamCityProperties()
+                    .AddTeamCityProperty(
+                        "script.content",
+                        "xcopy C:\\src\\{0}\\{1}\\appsettings.txt %teamcity.build.workingDir%\\wwwroot /Y".Fmt(ownerName, repoName)
+                    )
+                    .AddTeamCityProperty(BuildConfigWorkingDirPropertyName,workingDirectory)
+                    .AddTeamCityProperty(StepModePropertyName, "default")
+                    .AddTeamCityProperty("use.custom.script", "true")
             };
             return copyAppSettingsStep;
         }
@@ -265,32 +154,11 @@ namespace CIWizard.ServiceInterface
                 BuildTypeLocator = "id:" + buildConfigId,
                 Name = "Web Deploy - Pack",
                 TypeId = BuidStepTypes.CommandLine,
-                StepProperties = new CreateTeamCityProperties
-                {
-                    Properties = new List<CreateTeamCityProperty>
-                    {
-                        new CreateTeamCityProperty
-                        {
-                            Name = "command.executable",
-                            Value = "%env.MSDeployPath%\\msdeploy.exe"
-                        },
-                        new CreateTeamCityProperty
-                        {
-                            Name = "command.parameters",
-                            Value = "-verb:sync -source:iisApp=\"%teamcity.build.workingDir%\\wwwroot\" -dest:package=\"%teamcity.build.workingDir%\\webapp.zip\""
-                        },
-                        new CreateTeamCityProperty
-                        {
-                            Name = "teamcity.build.workingDir",
-                            Value = workingDirectory
-                        },
-                        new CreateTeamCityProperty
-                        {
-                            Name = "teamcity.step.mode",
-                            Value = "default"
-                        }
-                    }
-                }
+                StepProperties = new CreateTeamCityProperties()
+                    .AddTeamCityProperty("command.executable", "%env.MSDeployPath%\\msdeploy.exe")
+                    .AddTeamCityProperty("command.parameters", "-verb:sync -source:iisApp=\"%teamcity.build.workingDir%\\wwwroot\" -dest:package=\"%teamcity.build.workingDir%\\webapp.zip\"")
+                    .AddTeamCityProperty(BuildConfigWorkingDirPropertyName, workingDirectory)
+                    .AddTeamCityProperty(StepModePropertyName, "default")
             };
             return getWebDeployPackStep;
         }
@@ -302,35 +170,34 @@ namespace CIWizard.ServiceInterface
                 BuildTypeLocator = "id:" + buildConfigId,
                 Name = "Web Deploy - Push",
                 TypeId = BuidStepTypes.CommandLine,
-                StepProperties = new CreateTeamCityProperties
-                {
-                    Properties = new List<CreateTeamCityProperty>
-                    {
-                        new CreateTeamCityProperty
-                        {
-                            Name = "command.executable",
-                            Value = "%env.MSDeployPath%\\msdeploy.exe"
-                        },
-                        new CreateTeamCityProperty
-                        {
-                            Name = "command.parameters",
-                            Value = "-verb:sync -source:package=\"%teamcity.build.workingDir%\\webapp.zip\" -dest:iisApp=\"{0}\",wmsvc={1},username=%ss.msdeploy.username%,password=%ss.msdeploy.password% -allowUntrusted=true"
-                                .Fmt(appName,endpoint)
-                        },
-                        new CreateTeamCityProperty
-                        {
-                            Name = "teamcity.build.workingDir",
-                            Value = workingDirectory
-                        },
-                        new CreateTeamCityProperty
-                        {
-                            Name = "teamcity.step.mode",
-                            Value = "default"
-                        }
-                    }
-                }
+                StepProperties = new CreateTeamCityProperties()
+                    .AddTeamCityProperty("command.executable", "%env.MSDeployPath%\\msdeploy.exe")
+                    .AddTeamCityProperty(
+                    "command.parameters", 
+                    "-verb:sync -source:package=\"%teamcity.build.workingDir%\\webapp.zip\" -dest:iisApp=\"{0}\",wmsvc={1},username=%ss.msdeploy.username%,password=%ss.msdeploy.password% -allowUntrusted=true"
+                            .Fmt(appName,endpoint)
+                    )
+                    .AddTeamCityProperty(BuildConfigWorkingDirPropertyName, workingDirectory)
+                    .AddTeamCityProperty(StepModePropertyName, "default")
             };
             return getWebDeployPush;
+        }
+
+        public static CreateTeamCityProperty CreateTeamCityProperty(string name, string val)
+        {
+            return new CreateTeamCityProperty
+            {
+                Name = name,
+                Value = val
+            };
+        }
+
+        public static CreateTeamCityProperties AddTeamCityProperty(this CreateTeamCityProperties properties, string name,
+            string val)
+        {
+            if(properties.Properties == null) properties.Properties = new List<CreateTeamCityProperty>();
+            properties.Properties.Add(CreateTeamCityProperty(name,val));
+            return properties;
         }
 
         public static CreateTrigger GetCreateVcsTrigger(string buildConfigId)

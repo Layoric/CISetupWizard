@@ -104,7 +104,6 @@ namespace CIWizard.ServiceInterface
         public static List<GitHubRepository> GetGitHubRepositories(string accessToken)
         {
             List<GitHubRepository> result = new List<GitHubRepository>();
-            int pageCallsMax = 5;
             int currentPageCall = 1;
             int maxPerPage = 100;
             List<GitHubRepository> repos;
