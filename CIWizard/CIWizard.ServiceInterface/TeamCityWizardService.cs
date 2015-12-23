@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net;
 using CIWizard.ServiceModel;
@@ -28,7 +29,7 @@ namespace CIWizard.ServiceInterface
 
             try
             {
-                IisHelper.AddSite(request.Name);
+                IisHelper.AddSite(request.Name, request.HostName);
             }
             catch (Exception e)
             {
@@ -312,6 +313,30 @@ namespace CIWizard.ServiceInterface
             return vcsResponse;
         }
 
+        public UpdateAppSettingsConfigResponse Post(UpdateAppSettingsConfig request)
+        {
+            if (Request.Files == null || Request.Files.Length == 0)
+            {
+                throw new HttpError(HttpStatusCode.BadRequest,"MissingFile");
+            }
+            var uploadedFile = Request.Files[0];
+            // Thanks IE...
+            string fileName = uploadedFile.FileName.IndexOf("\\", StringComparison.Ordinal) > 0
+                ? uploadedFile.FileName.Substring(uploadedFile.FileName.LastIndexOf("\\", StringComparison.Ordinal) + 1)
+                : uploadedFile.FileName;
+            var filePath = "C:\\src\\{0}\\{1}\\{2}".Fmt(request.OwnerName, request.RepositoryName,
+                    fileName);
+            Log.Info("Application settings creation.\n\n Path: {0}\nFile size:{1}".Fmt(filePath, uploadedFile.ContentLength));
+            var dir = Path.GetDirectoryName(filePath);
+            if (dir != null && !Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+            uploadedFile.SaveTo(filePath);
+
+            return new UpdateAppSettingsConfigResponse();
+        }
+
         private CreateProjectResponse CreateTeamCityProject(CreateSpaBuildProject request)
         {
             var createProject = new CreateProject
@@ -325,18 +350,6 @@ namespace CIWizard.ServiceInterface
             };
             var createProjResponse = TeamCityClient.CreateProject(createProject);
             return createProjResponse;
-        }
-    }
-
-    [Route("/user/projects/{OwnerName}/{RepositoryName}", Verbs = "DELETE")]
-    public class DeleteTeamCityProject
-    {
-        public string RepositoryName { get; set; }
-        public string OwnerName { get; set; }
-
-        public string ProjectId
-        {
-            get { return "SS_" + OwnerName + "_" + RepositoryName; }
         }
     }
 }

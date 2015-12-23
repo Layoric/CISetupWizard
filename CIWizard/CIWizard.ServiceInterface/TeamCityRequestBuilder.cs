@@ -17,7 +17,7 @@ namespace CIWizard.ServiceInterface
                 Name = "NPM Install",
                 TypeId = BuidStepTypes.Npm,
                 StepProperties = new CreateTeamCityProperties()
-                    .AddTeamCityProperty("npm_commands", "install\ninstall grunt\ninstall grunt-cli\ninstall bower")
+                    .AddTeamCityProperty("npm_commands", "install\ninstall grunt\ninstall grunt-cli")
                     .AddTeamCityProperty(BuildConfigWorkingDirPropertyName,workingDirectory)
                     .AddTeamCityProperty(StepModePropertyName, "default")
             };

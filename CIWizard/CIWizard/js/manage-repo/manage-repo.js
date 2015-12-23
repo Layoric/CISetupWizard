@@ -2,14 +2,17 @@
 (function () {
     "use strict";
     var module = angular.module('manage-repo', [
-        'local-services'
+        'local-services',
+        'ciwizard.files'
     ]);
 
-    module.controller('managerRepoCtrl', ['$scope', '$routeParams', 'localServices',
-        function ($scope, $routeParams, localServices) {
+    module.controller('managerRepoCtrl', ['$scope', '$routeParams', 'localServices', 'fileUpload',
+        function ($scope, $routeParams, localServices,fileUpload) {
             $scope.loadingUserRepo = true;
             $scope.loadingSolutionDetails = true;
             $scope.ready = false;
+            $scope.ownerName = $routeParams.ownerName;
+            $scope.repoName = $routeParams.repoName;
             //Get repo
             localServices.getUserRepo($routeParams.ownerName, $routeParams.repoName).then(function (response) {
                 $scope.repo = response.data.repo;
@@ -42,6 +45,13 @@
 
             });
 
+            $scope.uploadFile = function () {
+                var file = $scope.appSettingsFile;
+                console.log('file is ' + JSON.stringify(file));
+                var uploadUrl = '/user/projects/' + $scope.ownerName + '/' + $scope.repoName + '/settings';
+                fileUpload.uploadFileToUrl(file, uploadUrl);
+            };
+
 
             $scope.createBuild = function () {
                 $scope.creating = true;
@@ -56,7 +66,8 @@
                     privateRepository: $scope.repoConfig.privateRepository,
                     solutionPath: $scope.repoConfig.solutionPath,
                     msDeployUserName: $scope.repoConfig.msDeployUserName,
-                    msDeployPassword: $scope.repoConfig.msDeployPassword
+                    msDeployPassword: $scope.repoConfig.msDeployPassword,
+                    hostName: $scope.repoConfig.hostName
                 };
                 localServices.createTeamCityBuild(request).then(function (response) {
                     $scope.success = true;

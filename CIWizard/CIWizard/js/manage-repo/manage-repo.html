@@ -2,7 +2,7 @@
     <div ng-show="!ready" style="align-content: center;text-align: center">
         <img src="/img/Loading_icon.gif" />
     </div>
-    <div ng-show="ready">
+    <div ng-show="ready && !projectExists">
         <h2 ng-bind="repo.name"></h2>
         <h5 ng-bind="repo.description"></h5>
         <form>
@@ -30,9 +30,22 @@
                 <label for="msDeployPasswordTxt">MSDeploy Password</label>
                 <input type="password" class="form-control" ng-model="repoConfig.msDeployPassword" id="msDeployPasswordTxt"/>
             </div>
+
+            <div class="form-group">
+                <label for="iisHostName">Host name</label>
+                <input type="text" class="form-control" ng-model="repoConfig.hostName" id="iisHostName"/>
+            </div>
         </form>
         <button type="button" class="btn btn-primary" ng-disabled="creating || projectExists" ng-click="createBuild()">Add to TeamCity</button>
-        <button type="button" class="btn btn-danger" ng-disabled="!projectExists" ng-click="deleteBuild()">Delete</button>
+    </div>
+    <div>
+        <form>
+            <div class="form-group">
+                <label for="appSettingsFileUpload">Application Settings</label>
+                <input type="file" class="form-control" file-model="appSettingsFile" id="appSettingsFileUpload" />
+            </div>
+            <button ng-click="uploadFile()" type="button" class="form-control btn btn-primary">Upload</button>
+        </form>
     </div>
     <br />
     <div ng-show="projectExists">
@@ -42,6 +55,7 @@
             <span ng-bind="buildStatus"></span>
             <span ng-bind="buildLastUpdate | date: 'yyyy/MM/dd HH:mm'"></span>
         </div>
+        <button type="button" class="btn btn-danger" ng-disabled="!projectExists" ng-click="deleteBuild()">Delete</button>
     </div>
     <div ng-show="ready && success">
         <div class="alert alert-success" role="alert">

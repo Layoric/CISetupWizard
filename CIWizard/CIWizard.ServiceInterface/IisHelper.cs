@@ -11,7 +11,7 @@ namespace CIWizard.ServiceInterface
 {
     public static class IisHelper
     {
-        public static void AddSite(string siteName)
+        public static void AddSite(string siteName, string hostName = null)
         {
             //using (var sm = new ServerManager("C:\\Windows\\System32\\inetsrv\\config\\applicationHost.config")) // IIS Express is default, force IIS localhost
             using (var sm = new ServerManager())
@@ -26,12 +26,20 @@ namespace CIWizard.ServiceInterface
                 {
                     return;
                 }
-                string path = "C:\\inetpub\\{0}".Fmt(siteName);
+                string path = "C:\\inetpub\\wwwroot\\{0}".Fmt(siteName);
                 if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path);
                 }
-                var site = sm.Sites.Add(siteName, path, 80);
+                Site site = null;
+                if (hostName != null)
+                {
+                    site = sm.Sites.Add(siteName, "http", "*:80:{0}".Fmt(hostName), path);
+                }
+                else
+                {
+                    site = sm.Sites.Add(siteName, path, 80);
+                }
                 site.ServerAutoStart = true;
                 site.ApplicationDefaults.ApplicationPoolName = appPool.Name;
                 // Set HostName info for binding

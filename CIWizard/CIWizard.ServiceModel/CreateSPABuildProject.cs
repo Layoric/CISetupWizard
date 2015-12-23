@@ -22,6 +22,8 @@ namespace CIWizard.ServiceModel
 
         public string MsDeployUserName { get; set; }
         public string MsDeployPassword { get; set; }
+
+        public string HostName { get; set; }
     }
 
     public class CreateSpaBuildProjectResponse
