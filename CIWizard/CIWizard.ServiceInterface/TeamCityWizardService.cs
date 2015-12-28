@@ -7,15 +7,19 @@ using System.Net;
 using CIWizard.ServiceModel;
 using CIWizard.ServiceModel.Types;
 using ServiceStack;
+using ServiceStack.Configuration;
+using ServiceStack.IO;
 using ServiceStack.Logging;
 using ServiceStack.TeamCityClient;
 using ServiceStack.TeamCityClient.Types;
+using ServiceStack.VirtualPath;
 
 namespace CIWizard.ServiceInterface
 {
     public class TeamCityWizardService : Service
     {
         public TcClient TeamCityClient { get; set; }
+        public IAppSettings AppSettings { get; set; }
         public static ILog Log = LogManager.GetLogger(typeof(TeamCityWizardService));
 
         public CreateSpaBuildProjectResponse Post(CreateSpaBuildProject request)
@@ -40,7 +44,7 @@ namespace CIWizard.ServiceInterface
             var createBuildConfig = new CreateBuildConfig
             {
                 Locator = "id:" + createProjResponse.Id,
-                Name = "Build"
+                Name = "Build and Deploy"
             };
             var buildConfigResponse = TeamCityClient.CreateBuildConfig(createBuildConfig);
             TeamCityClient.UpdateBuildConfigSettings(new UpdateBuildConfigSetting
@@ -50,31 +54,31 @@ namespace CIWizard.ServiceInterface
                 Value = request.WorkingDirectory + "/wwwroot => " + request.WorkingDirectory + "/wwwroot"
             });
 
-            TeamCityClient.UpdateBuildConfigParameters(new UpdateBuildConfigParameters
-            {
-                Locator = "id:" + buildConfigResponse.Id,
-                Properties = new List<CreateTeamCityBuildParameter>
-                {
-                    new CreateTeamCityBuildParameter
-                    {
-                        Name = "ss.msdeploy.username",
-                        Value = request.MsDeployUserName,
-                        Type = new CreateTeamCityBuildParameterType
-                        {
-                            Value = "text validationMode='any' display='normal'"
-                        }
-                    },
-                    new CreateTeamCityBuildParameter
-                    {
-                        Name = "ss.msdeploy.password",
-                        Value = request.MsDeployPassword,
-                        Type = new CreateTeamCityBuildParameterType
-                        {
-                            Value = "password display='normal'"
-                        }
-                    }
-                }
-            });
+            //TeamCityClient.UpdateBuildConfigParameters(new UpdateBuildConfigParameters
+            //{
+            //    Locator = "id:" + buildConfigResponse.Id,
+            //    Properties = new List<CreateTeamCityBuildParameter>
+            //    {
+            //        new CreateTeamCityBuildParameter
+            //        {
+            //            Name = "ss.msdeploy.username",
+            //            Value = request.MsDeployUserName,
+            //            Type = new CreateTeamCityBuildParameterType
+            //            {
+            //                Value = "text validationMode='any' display='normal'"
+            //            }
+            //        },
+            //        new CreateTeamCityBuildParameter
+            //        {
+            //            Name = "ss.msdeploy.password",
+            //            Value = request.MsDeployPassword,
+            //            Type = new CreateTeamCityBuildParameterType
+            //            {
+            //                Value = "password display='normal'"
+            //            }
+            //        }
+            //    }
+            //});
 
             AttachVcsToProject(buildConfigResponse, vcsResponse);
             CreateVcsTrigger(buildConfigResponse);
@@ -157,6 +161,17 @@ namespace CIWizard.ServiceInterface
                 BuildStatus = build.StatusText
             };
             return response;
+        }
+
+        public GetApplicationSettingsFilesResponse Get(GetApplicationSettingsFiles request)
+        {
+            List<string> files = new List<string>();
+            DirectoryInfo projectFolder = new DirectoryInfo("{0}{1}\\{2}\\".Fmt(AppSettings.GetString("ApplicationSettingsBaseFolder"),request.OwnerName,request.RepositoryName));
+            files.AddRange(projectFolder.GetFiles().Select(x => x.Name));
+            return new GetApplicationSettingsFilesResponse
+            {
+                FileNames = files
+            };
         }
 
         [Authenticate]
@@ -265,7 +280,11 @@ namespace CIWizard.ServiceInterface
             CreateBuildConfigResponse buildConfigResponse)
         {
             var copyAppSettingsStep = TeamCityClient.CreateBuildStep(
-               TeamCityRequestBuilder.GetCopyAppSettingsStep(buildConfigResponse.Id, request.WorkingDirectory, request.OwnerName,request.Name));
+               TeamCityRequestBuilder.GetCopyAppSettingsStep(buildConfigResponse.Id, 
+               request.WorkingDirectory, 
+               AppSettings.GetString("ApplicationSettingsBaseFolder"), 
+               request.OwnerName,
+               request.Name));
             return copyAppSettingsStep;
         }
 
@@ -324,8 +343,11 @@ namespace CIWizard.ServiceInterface
             string fileName = uploadedFile.FileName.IndexOf("\\", StringComparison.Ordinal) > 0
                 ? uploadedFile.FileName.Substring(uploadedFile.FileName.LastIndexOf("\\", StringComparison.Ordinal) + 1)
                 : uploadedFile.FileName;
-            var filePath = "C:\\src\\{0}\\{1}\\{2}".Fmt(request.OwnerName, request.RepositoryName,
-                    fileName);
+            var filePath = "{0}{1}\\{2}\\{3}".Fmt(
+                AppSettings.GetString("ApplicationSettingsBaseFolder"),
+                request.OwnerName, 
+                request.RepositoryName,
+                fileName);
             Log.Info("Application settings creation.\n\n Path: {0}\nFile size:{1}".Fmt(filePath, uploadedFile.ContentLength));
             var dir = Path.GetDirectoryName(filePath);
             if (dir != null && !Directory.Exists(dir))

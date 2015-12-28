@@ -24,10 +24,10 @@
                     return $http.get('/user/builds')
                 },
                 getTeamCityBuild: function(owner, repoName) {
-                    return $http.get('/user/builds/' + owner + "/" + repoName);
+                    return $http.get('/user/builds/' + owner + '/' + repoName);
                 },
                 getTeamCityProject: function(owner, repoName) {
-                    return $http.get('/user/projects/' + owner + "/" + repoName);
+                    return $http.get('/user/projects/' + owner + '/' + repoName);
                 },
                 getTeamCityProjects: function() {
                     return $http.get('/user/projects');
@@ -36,7 +36,10 @@
                     return $http.post('/user/build', createTeamCityReq);
                 },
                 deleteTeamCityBuild: function(owner, repoName) {
-                    return $http.delete('/user/projects/' + owner + "/" + repoName);
+                    return $http.delete('/user/projects/' + owner + '/' + repoName);
+                },
+                getProjectFiles: function (owner,repoName) {
+                    return $http.get('/user/projects/' + owner + '/' + repoName + '/files');
                 }
             }
         }

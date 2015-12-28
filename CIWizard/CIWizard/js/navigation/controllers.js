@@ -10,6 +10,8 @@
              * @return {boolean}
              */
             $scope.IsRouteActive = function (routePath) {
+                console.log($location.path());
+                console.log(routePath === $location.path());
                 return routePath === $location.path();
             };
 

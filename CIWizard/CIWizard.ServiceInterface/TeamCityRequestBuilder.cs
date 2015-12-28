@@ -129,7 +129,7 @@ namespace CIWizard.ServiceInterface
             return bowerInstallBuildStep;
         }
 
-        public static CreateBuildStep GetCopyAppSettingsStep(string buildConfigId, string workingDirectory, string ownerName, string repoName)
+        public static CreateBuildStep GetCopyAppSettingsStep(string buildConfigId, string workingDirectory, string rootAppSettingsDir, string ownerName, string repoName)
         {
             var copyAppSettingsStep = new CreateBuildStep
             {
@@ -139,7 +139,10 @@ namespace CIWizard.ServiceInterface
                 StepProperties = new CreateTeamCityProperties()
                     .AddTeamCityProperty(
                         "script.content",
-                        "xcopy C:\\src\\{0}\\{1}\\appsettings.txt %teamcity.build.workingDir%\\wwwroot /Y".Fmt(ownerName, repoName)
+                        "xcopy {0}{1}\\{2}\\appsettings.txt %teamcity.build.workingDir%\\wwwroot /Y".Fmt(
+                            rootAppSettingsDir,
+                            ownerName, 
+                            repoName)
                     )
                     .AddTeamCityProperty(BuildConfigWorkingDirPropertyName,workingDirectory)
                     .AddTeamCityProperty(StepModePropertyName, "default")

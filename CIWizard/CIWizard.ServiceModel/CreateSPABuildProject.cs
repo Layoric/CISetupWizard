@@ -20,9 +20,6 @@ namespace CIWizard.ServiceModel
         public string WorkingDirectory { get; set; }
         public string ProjectName { get; set; }
 
-        public string MsDeployUserName { get; set; }
-        public string MsDeployPassword { get; set; }
-
         public string HostName { get; set; }
     }
 

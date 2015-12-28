@@ -10,7 +10,8 @@
         'manage-repo',
         'github',
         'team-city',
-        'local-services'
+        'local-services',
+        'breadcrumbs'
     ]);
 
     module.config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {

@@ -57,6 +57,12 @@ namespace CIWizard
                 
             });
 
+            if(!AppSettings.Exists("ApplicationSettingsBaseFolder"))
+                AppSettings.Set("ApplicationSettingsBaseFolder","C:\\src\\");
+
+            if (!Directory.Exists(AppSettings.GetString("ApplicationSettingsBaseFolder")))
+                Directory.CreateDirectory(AppSettings.GetString("ApplicationSettingsBaseFolder"));
+
             LogManager.LogFactory = new EventLogFactory("CIWizard","Application");
 
             JsConfig.DateHandler = DateHandler.ISO8601;
@@ -65,10 +71,8 @@ namespace CIWizard
 
             this.Plugins.Add(new AuthFeature(() => new AuthUserSession(), new IAuthProvider[]
             {
-                new GithubAuthProvider(AppSettings), 
+                new GithubAuthProvider(AppSettings)
             }));
-
-            
 
             container.Register(new TcClient(
                 AppSettings.GetString("ServerApiBaseUrl"),
@@ -76,8 +80,6 @@ namespace CIWizard
                 AppSettings.GetString("Password")));
 
             JsConfig.EmitCamelCaseNames = true;
-
-            
         }
     }
 

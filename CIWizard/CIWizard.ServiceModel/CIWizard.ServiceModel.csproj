@@ -48,11 +48,13 @@
   <ItemGroup>
     <Compile Include="CreateSPABuildProject.cs" />
     <Compile Include="DeleteTeamCityProject.cs" />
+    <Compile Include="GetApplicationSettingsFiles.cs" />
     <Compile Include="GetBuildStatus.cs" />
     <Compile Include="GetGitHubRepositories.cs" />
     <Compile Include="GetGitHubRepository.cs" />
     <Compile Include="GetSolutionDetails.cs" />
     <Compile Include="GetTeamCityProjectDetails.cs" />
+    <Compile Include="GetTeamCityUrl.cs" />
     <Compile Include="Hello.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SessionInfo.cs" />

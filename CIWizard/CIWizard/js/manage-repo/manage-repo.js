@@ -18,6 +18,9 @@
                 $scope.repo = response.data.repo;
                 $scope.loadingUserRepo = false;
                 $scope.ready = !$scope.loadingUserRepo && !$scope.loadingSolutionDetails;
+            }, function (response) {
+                $scope.loadingUserRepo = false;
+                $scope.ready = !$scope.loadingUserRepo && !$scope.loadingSolutionDetails;
             });
 
             localServices.getSolutionDetails($routeParams.ownerName, $routeParams.repoName).then(function (response) {
@@ -26,8 +29,11 @@
                 $scope.repoConfig.msDeployUserName = "Administrator";
                 $scope.loadingSolutionDetails = false;
                 $scope.ready = !$scope.loadingUserRepo && !$scope.loadingSolutionDetails;
+                $scope.isValidRepository = true;
             }, function (response) {
                 //Error, offer to specify alternate branch?
+                $scope.loadingSolutionDetails = false;
+                $scope.ready = !$scope.loadingUserRepo && !$scope.loadingSolutionDetails;
             });
 
             localServices.getTeamCityProject($routeParams.ownerName,$routeParams.repoName).then(function (response) {
@@ -65,8 +71,6 @@
                     projectName: $scope.repoConfig.projectName,
                     privateRepository: $scope.repoConfig.privateRepository,
                     solutionPath: $scope.repoConfig.solutionPath,
-                    msDeployUserName: $scope.repoConfig.msDeployUserName,
-                    msDeployPassword: $scope.repoConfig.msDeployPassword,
                     hostName: $scope.repoConfig.hostName
                 };
                 localServices.createTeamCityBuild(request).then(function (response) {
@@ -87,6 +91,16 @@
                 if(newVal === true) {
 
                 }
-            })
+            });
+
+            localServices.getProjectFiles($routeParams.ownerName,$routeParams.repoName).then(function (response) {
+                console.log(response.data);
+                for(var i = 0; i < response.data.fileNames.length;i++) {
+                    var file = response.data.fileNames[i];
+                    if(file === "appsettings.txt")
+                        $scope.hasAppSettings = true;
+                }
+                $scope.files = response.data.fileNames;
+            });
         }]);
 })();

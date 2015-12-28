@@ -50,9 +50,9 @@ namespace CIWizard.ServiceInterface
             if (slnPath == null)
                 return null;
             int lastIndexOfFwdSlash = slnPath.LastIndexOf("/", StringComparison.Ordinal);
-            int start = lastIndexOfFwdSlash == -1 ? 0 : lastIndexOfFwdSlash;
-            string projName = slnPath.Substring(start + 1,
-            slnPath.LastIndexOf(".", StringComparison.Ordinal) - start - 1);
+            int start = lastIndexOfFwdSlash == -1 ? 0 : lastIndexOfFwdSlash + 1;
+            string projName = slnPath.Substring(start,
+            slnPath.LastIndexOf(".", StringComparison.Ordinal) - start);
             return projName;
         }
 

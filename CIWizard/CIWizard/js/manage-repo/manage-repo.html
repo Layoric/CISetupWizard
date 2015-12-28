@@ -2,43 +2,9 @@
     <div ng-show="!ready" style="align-content: center;text-align: center">
         <img src="/img/Loading_icon.gif" />
     </div>
-    <div ng-show="ready && !projectExists">
+    <div ng-show="ready">
         <h2 ng-bind="repo.name"></h2>
         <h5 ng-bind="repo.description"></h5>
-        <form>
-            <div class="form-group">
-                <label for="solutionPathTxt">Solution Path</label>
-                <input type="text" class="form-control" ng-model="repoConfig.solutionPath" id="solutionPathTxt" ng-disabled="true" />
-            </div>
-            <div class="form-group">
-                <label for="branchTxt">Branch</label>
-                <input type="text" class="form-control" ng-model="repoConfig.branch" id="branchTxt" ng-disabled="true"/>
-            </div>
-            <div class="form-group">
-                <label for="gitUrlTxt">Git Url</label>
-                <input type="text" class="form-control" ng-model="repoConfig.repositoryUrl" id="gitUrlTxt" ng-disabled="true"/>
-            </div>
-            <div class="form-group">
-                <label for="templateTypeTxt">Template Type</label>
-                <input type="text" class="form-control" ng-model="repoConfig.templateType" id="templateTypeTxt" ng-disabled="true"/>
-            </div>
-            <div class="form-group">
-                <label for="msDeployUsernameTxt">MSDeploy Username</label>
-                <input type="text" class="form-control" ng-model="repoConfig.msDeployUserName" id="msDeployUsernameTxt" />
-            </div>
-            <div class="form-group">
-                <label for="msDeployPasswordTxt">MSDeploy Password</label>
-                <input type="password" class="form-control" ng-model="repoConfig.msDeployPassword" id="msDeployPasswordTxt"/>
-            </div>
-
-            <div class="form-group">
-                <label for="iisHostName">Host name</label>
-                <input type="text" class="form-control" ng-model="repoConfig.hostName" id="iisHostName"/>
-            </div>
-        </form>
-        <button type="button" class="btn btn-primary" ng-disabled="creating || projectExists" ng-click="createBuild()">Add to TeamCity</button>
-    </div>
-    <div>
         <form>
             <div class="form-group">
                 <label for="appSettingsFileUpload">Application Settings</label>
@@ -46,22 +12,24 @@
             </div>
             <button ng-click="uploadFile()" type="button" class="form-control btn btn-primary">Upload</button>
         </form>
+        <div class="text-danger" ng-show="!hasAppSettings">
+            Missing required `appsettings.txt`.
+        </div>
+        <div>
+            <h4>All files</h4>
+            <ul>
+                <li ng-repeat="file in files">{{file}}</li>
+            </ul>
+        </div>
     </div>
     <br />
-    <div ng-show="projectExists">
-        <h3>Build Status</h3>
-        <div ng-class="{'alert-success' : buildStatus == 'SUCCESS', 'alert-danger' : buildStatus == 'FAILURE'}">
-            <span ng-show="!buildStatus">No build history available</span>
-            <span ng-bind="buildStatus"></span>
-            <span ng-bind="buildLastUpdate | date: 'yyyy/MM/dd HH:mm'"></span>
+    <div class="pull-right">
+        <div class="checkbox-inline">
+            <input type="checkbox" id="deleteTcProjCheckbox" ng-model="proj.enableDelete"/><label for="deleteTcProjCheckbox">Delete</label>
         </div>
-        <button type="button" class="btn btn-danger" ng-disabled="!projectExists" ng-click="deleteBuild()">Delete</button>
+        <br />
+        <button type="button" class="btn btn-danger" ng-disabled="!proj.enableDelete || !projectExists" ng-click="deleteBuild()">Delete TeamCity Project</button>
     </div>
-    <div ng-show="ready && success">
-        <div class="alert alert-success" role="alert">
-            <span class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span>
-            <span class="sr-only">Success:</span>
-            TeamCity config created successfully!
-        </div>
-    </div>
+
+
 </div>

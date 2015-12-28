@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Web.Administration;
 using ServiceStack;
 
@@ -13,13 +10,12 @@ namespace CIWizard.ServiceInterface
     {
         public static void AddSite(string siteName, string hostName = null)
         {
-            //using (var sm = new ServerManager("C:\\Windows\\System32\\inetsrv\\config\\applicationHost.config")) // IIS Express is default, force IIS localhost
             using (var sm = new ServerManager())
             {
                 var invalidChars = SiteCollection.InvalidSiteNameCharacters();
                 if (siteName.IndexOfAny(invalidChars) > -1)
                 {
-                    throw new Exception(string.Format("Invalid Site Name: {0}", siteName));
+                    throw new Exception("Invalid Site Name: {0}".Fmt(siteName));
                 }
                 var appPool = AddAppPool(sm, siteName, "v4.0", ManagedPipelineMode.Integrated);
                 if (sm.Sites[siteName] != null)
@@ -31,18 +27,14 @@ namespace CIWizard.ServiceInterface
                 {
                     Directory.CreateDirectory(path);
                 }
-                Site site = null;
-                if (hostName != null)
-                {
-                    site = sm.Sites.Add(siteName, "http", "*:80:{0}".Fmt(hostName), path);
-                }
-                else
-                {
-                    site = sm.Sites.Add(siteName, path, 80);
-                }
+                var site = hostName != null ? sm.Sites.Add(siteName, "http", "*:80:{0}".Fmt(hostName), path) : sm.Sites.Add(siteName, path, 80);
                 site.ServerAutoStart = true;
                 site.ApplicationDefaults.ApplicationPoolName = appPool.Name;
                 // Set HostName info for binding
+
+                sm.CommitChanges();
+
+                AddMsDeployAccessToSite(sm, siteName, "wizard_deploy");
 
                 sm.CommitChanges();
             }
@@ -59,6 +51,58 @@ namespace CIWizard.ServiceInterface
             appPool.ManagedRuntimeVersion = runtimeVersion;
             appPool.ManagedPipelineMode = piplineMode;
             return appPool;
+        }
+
+        private static void AddMsDeployAccessToSite(ServerManager sm,string siteName, string iisMgrUserName)
+        {
+            Configuration config = sm.GetAdministrationConfiguration();
+            ConfigurationSection authorizationSection = config.GetSection("system.webServer/management/authorization");
+            ConfigurationElementCollection authorizationRulesCollection = authorizationSection.GetCollection("authorizationRules");
+
+            ConfigurationElement scopeElement = FindElement(authorizationRulesCollection, "scope", "path", @"/{0}".Fmt(siteName));
+            if (scopeElement == null)
+            {
+                scopeElement = authorizationRulesCollection.CreateElement("scope");
+                scopeElement["path"] = @"/{0}".Fmt(siteName);
+                authorizationRulesCollection.Add(scopeElement);
+            }
+
+            ConfigurationElementCollection scopeCollection = scopeElement.GetCollection();
+            ConfigurationElement addElement = scopeCollection.CreateElement("add");
+            addElement["name"] = iisMgrUserName;
+            scopeCollection.Add(addElement);
+
+            sm.CommitChanges();
+        }
+
+        private static ConfigurationElement FindElement(ConfigurationElementCollection collection, string elementTagName, params string[] keyValues)
+        {
+            foreach (ConfigurationElement element in collection)
+            {
+                if (string.Equals(element.ElementTagName, elementTagName, StringComparison.OrdinalIgnoreCase))
+                {
+                    bool matches = true;
+                    for (int i = 0; i < keyValues.Length; i += 2)
+                    {
+                        object o = element.GetAttributeValue(keyValues[i]);
+                        string value = null;
+                        if (o != null)
+                        {
+                            value = o.ToString();
+                        }
+                        if (!string.Equals(value, keyValues[i + 1], StringComparison.OrdinalIgnoreCase))
+                        {
+                            matches = false;
+                            break;
+                        }
+                    }
+                    if (matches)
+                    {
+                        return element;
+                    }
+                }
+            }
+            return null;
         }
     }
 }
