@@ -14,6 +14,7 @@ TeamCity v9 client using ServiceStack.Client with demo AppHost, still a work in 
 10. Add `MSDeployPath` Environment variable
 11. Create `CIWizard` user, add to `Administrators` group, disable RDP -> For IIS Management + CIWizard AppPool Account
 12. Create `wizard_deploy` 'IIS Manager' user.
+![](https://github.com/Layoric/TeamCityClient/raw/master/images/iis-manage.png)
 13. Add `ss.msdeploy.username` and `ss.msdeploy.password`
 
 
