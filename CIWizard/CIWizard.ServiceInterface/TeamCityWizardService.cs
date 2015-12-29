@@ -167,7 +167,11 @@ namespace CIWizard.ServiceInterface
         {
             List<string> files = new List<string>();
             DirectoryInfo projectFolder = new DirectoryInfo("{0}{1}\\{2}\\".Fmt(AppSettings.GetString("ApplicationSettingsBaseFolder"),request.OwnerName,request.RepositoryName));
-            files.AddRange(projectFolder.GetFiles().Select(x => x.Name));
+            if (projectFolder.Exists)
+            {
+                files.AddRange(projectFolder.GetFiles().Select(x => x.Name));
+            }
+            
             return new GetApplicationSettingsFilesResponse
             {
                 FileNames = files

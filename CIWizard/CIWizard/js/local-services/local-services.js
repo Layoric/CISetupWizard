@@ -40,6 +40,9 @@
                 },
                 getProjectFiles: function (owner,repoName) {
                     return $http.get('/user/projects/' + owner + '/' + repoName + '/files');
+                },
+                deleteProjectFile: function (owner, repoName, fileName) {
+                    return $http.delete('/user/projects/' + owner + '/' + repoName + '/files?FileName=' + fileName);
                 }
             }
         }

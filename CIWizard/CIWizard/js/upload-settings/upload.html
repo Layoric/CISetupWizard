@@ -1,0 +1,18 @@
+<div>
+    <form>
+        <div class="form-group">
+            <label for="appSettingsFileUpload">Application Settings</label>
+            <input type="file" class="form-control" file-model="appSettingsFile" id="appSettingsFileUpload" ng-disabled="isDisabled" />
+        </div>
+        <button ng-click="uploadFile()" type="button" class="form-control btn btn-primary" ng-disabled="isDisabled">Upload</button>
+    </form>
+    <div class="text-danger" ng-show="!hasAppSettings">
+        Missing required `appsettings.txt`.
+    </div>
+    <div>
+        <h4>All files</h4>
+        <ul>
+            <li ng-repeat="file in files">{{file}}</li>
+        </ul>
+    </div>
+</div>

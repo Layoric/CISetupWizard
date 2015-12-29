@@ -5,21 +5,8 @@
     <div ng-show="ready">
         <h2 ng-bind="repo.name"></h2>
         <h5 ng-bind="repo.description"></h5>
-        <form>
-            <div class="form-group">
-                <label for="appSettingsFileUpload">Application Settings</label>
-                <input type="file" class="form-control" file-model="appSettingsFile" id="appSettingsFileUpload" />
-            </div>
-            <button ng-click="uploadFile()" type="button" class="form-control btn btn-primary">Upload</button>
-        </form>
-        <div class="text-danger" ng-show="!hasAppSettings">
-            Missing required `appsettings.txt`.
-        </div>
-        <div>
-            <h4>All files</h4>
-            <ul>
-                <li ng-repeat="file in files">{{file}}</li>
-            </ul>
+        <div ng-if="ownerName && repoName">
+            <upload-settings owner-name="ownerName" repo-name="repoName"></upload-settings>
         </div>
     </div>
     <br />
@@ -30,6 +17,4 @@
         <br />
         <button type="button" class="btn btn-danger" ng-disabled="!proj.enableDelete || !projectExists" ng-click="deleteBuild()">Delete TeamCity Project</button>
     </div>
-
-
 </div>

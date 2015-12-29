@@ -18,7 +18,7 @@
             });
 
             $scope.onRepoSelect = function (repo) {
-                $location.path('manage/' + repo.owner.login + '/' + repo.name);
+                $location.path('create/' + repo.owner.login + '/' + repo.name);
             }
         }
     ]);

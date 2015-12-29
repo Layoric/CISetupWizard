@@ -1,10 +1,11 @@
-<div>
-    <div ng-show="!ready" style="align-content: center;text-align: center">
-        <img src="/img/Loading_icon.gif"/>
-    </div>
-    <div ng-show="ready">
-
-        <table class="table table-striped" ng-show="!projectExists">
+<div ng-show="!ready" style="align-content: center;text-align: center">
+    <img src="/img/Loading_icon.gif"/>
+</div>
+<div ng-show="ready">
+    <div>
+        <h2 ng-bind="repo.name"></h2>
+        <h5 ng-bind="repo.description"></h5>
+        <table class="table table-bordered" ng-show="!projectExists">
             <tbody>
             <tr>
                 <td>Solution Path</td>
@@ -22,35 +23,23 @@
                 <td ng-show="isValidRepository" ng-bind="repoConfig.repositoryUrl"></td>
                 <td ng-show="!isValidRepository">N/A</td>
             </tr>
-            <tr>
+            <tr ng-class="{'danger': repoConfig.templateType === 'Unknown'}">
                 <td>Template Type</td>
                 <td ng-show="isValidRepository" ng-bind="repoConfig.templateType"></td>
-                <td ng-show="!isValidRepository">N/A</td>
+                <td ng-show="!isValidRepository" class="danger">N/A</td>
             </tr>
             </tbody>
         </table>
         <form>
             <div class="form-group">
                 <label for="iisHostName">Host name</label>
-                <input type="text" class="form-control" ng-model="repoConfig.hostName" id="iisHostName"/>
+                <input type="text" class="form-control" ng-model="repoConfig.hostName" id="iisHostName" ng-disabled="repoConfig.templateType === 'Unknown'"/>
             </div>
         </form>
     </div>
-    <div>
-        <form>
-            <div class="form-group">
-                <label for="appSettingsFileUpload">Application Settings</label>
-                <input type="file" class="form-control" file-model="appSettingsFile" id="appSettingsFileUpload"/>
-            </div>
-            <button ng-click="uploadFile()" type="button" class="form-control btn btn-primary">Upload</button>
-        </form>
-        <div class="text-danger" ng-show="!hasAppSettings">
-            Missing required `appsettings.txt`.
-        </div>
-        <div ng-show=""></div>
-    </div>
+    <upload-settings owner-name="ownerName" repo-name="repoName" is-disabled="repoConfig.templateType === 'Unknown'"></upload-settings>
     <button type="button"
             class="btn btn-primary pull-right"
             ng-disabled="!(!creating && !projectExists && isValidRepository && repoConfig.hostName && hasAppSettings)"
-            ng-click="createBuild()">Add to TeamCity</button>
+            ng-click="createBuild()">Create TeamCity Project</button>
 </div>
