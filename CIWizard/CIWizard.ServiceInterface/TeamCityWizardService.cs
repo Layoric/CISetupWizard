@@ -111,6 +111,15 @@ namespace CIWizard.ServiceInterface
             TeamCityClient.DeleteProject(new DeleteProject { Locator = "id:" + request.ProjectId});
         }
 
+        public GetTeamCityUrlResponse Get(GetTeamCityUrl request)
+        {
+            return new GetTeamCityUrlResponse
+            {
+                //Strip app/rest out of configured TC api url.
+                Url = AppSettings.GetString("ServerApiBaseUrl").Replace("app/rest", "")
+            };
+        }
+
         public GetTeamCityProjectDetailsResponse Get(GetTeamCityProjectDetails request)
         {
             GetProjectResponse teamCityResponse = null;

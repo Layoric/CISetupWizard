@@ -43,6 +43,9 @@
                 },
                 deleteProjectFile: function (owner, repoName, fileName) {
                     return $http.delete('/user/projects/' + owner + '/' + repoName + '/files?FileName=' + fileName);
+                },
+                getTeamCityUrl: function () {
+                    return $http.get('/teamcity/url');
                 }
             }
         }

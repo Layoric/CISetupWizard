@@ -35,5 +35,10 @@
                     $scope.projectExists = false;
                 })
             };
+
+            localServices.getTeamCityUrl().then(function (response) {
+                console.log(response);
+                $scope.tcProjectUrl = response.data.url + 'admin/editProject.html?projectId=SS_' + $routeParams.ownerName + '_' + $routeParams.repoName;
+            })
         }]);
 })();

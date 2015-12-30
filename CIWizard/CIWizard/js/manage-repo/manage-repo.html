@@ -3,7 +3,7 @@
         <img src="/img/Loading_icon.gif" />
     </div>
     <div ng-show="ready">
-        <h2 ng-bind="repo.name"></h2>
+        <h2 style="display:inline-block"><a ng-href="{{tcProjectUrl}}" target="_blank" title="Open in TeamCity">{{repo.name}}</a></h2>
         <h5 ng-bind="repo.description"></h5>
         <div ng-if="ownerName && repoName">
             <upload-settings owner-name="ownerName" repo-name="repoName"></upload-settings>
