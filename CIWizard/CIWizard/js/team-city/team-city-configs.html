@@ -1,11 +1,6 @@
 <div ng-show="teamCityConfigs && teamCityConfigs.length > 0">
-    <h2>Active Configurations</h2>
+    <h3>Configured Apps</h3>
     <table class="table table-striped">
-        <thead>
-            <tr>
-                <td>Name</td>
-            </tr>
-        </thead>
         <tbody>
             <tr ng-repeat="tcConfig in teamCityConfigs">
                 <td><a href="#/manage/{{tcConfig.owner.login}}/{{tcConfig.name}}" ng-bind="tcConfig.name"></a></td>
