@@ -23,7 +23,6 @@
                                 $scope.hasAppSettings = true;
                         }
                         $scope.files = response.data.fileNames;
-                        console.log($scope.files);
                     });
                 };
 
@@ -37,7 +36,6 @@
 
                 $scope.uploadFile = function () {
                     var file = $scope.appSettingsFile;
-                    console.log('file is ' + JSON.stringify(file));
                     var uploadUrl = '/user/projects/' + $scope.ownerName + '/' + $scope.repoName + '/settings';
                     fileUpload.uploadFileToUrl(file, uploadUrl).then(function () {
                         $scope.getFiles();

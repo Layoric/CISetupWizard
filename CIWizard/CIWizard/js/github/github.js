@@ -39,16 +39,13 @@
                         }
                     };
 
-                    $scope.$watch('search.orgName', function (newVal,oldVal) {
-                        console.log(newVal);
-                       //On change, remove  values from
+                    $scope.$watch('search.orgName', function (newVal) {
+                       //On change, files orgs
                         if(newVal && newVal != '') {
-                            console.log('filtering by name');
                             $scope.selectedOrgs = $scope.allOrgs.filter(function (val) {
                                 return val.orgName === newVal;
                             })
                         } else {
-                            console.log('no name, show all');
                             $scope.selectedOrgs = angular.copy($scope.allOrgs);
                         }
                     });
