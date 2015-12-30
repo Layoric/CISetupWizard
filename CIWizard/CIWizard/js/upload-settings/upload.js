@@ -39,7 +39,11 @@
                     var file = $scope.appSettingsFile;
                     console.log('file is ' + JSON.stringify(file));
                     var uploadUrl = '/user/projects/' + $scope.ownerName + '/' + $scope.repoName + '/settings';
-                    fileUpload.uploadFileToUrl(file, uploadUrl);
+                    fileUpload.uploadFileToUrl(file, uploadUrl).then(function () {
+                        $scope.getFiles();
+                    }, function () {
+                        // Failed to upload error
+                    })
                 };
 
                 $scope.getFiles();

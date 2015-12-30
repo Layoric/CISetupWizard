@@ -1,11 +1,11 @@
 <div ng-show="!ready" style="align-content: center;text-align: center">
     <img src="/img/Loading_icon.gif"/>
 </div>
-<div ng-show="ready">
-    <div>
+<div ng-show="ready" class="row">
+    <div class="col-md-6">
         <h2 ng-bind="repo.name"></h2>
         <h5 ng-bind="repo.description"></h5>
-        <table class="table table-bordered" ng-show="!projectExists">
+        <table class="table table-bordered table-responsive">
             <tbody>
             <tr>
                 <td>Solution Path</td>
@@ -25,19 +25,23 @@
             </tr>
             <tr ng-class="{'danger': repoConfig.templateType === 'Unknown'}">
                 <td>Template Type</td>
-                <td ng-show="isValidRepository" ng-bind="repoConfig.templateType"></td>
+                <td ng-show="isValidRepository" ng-bind="repoConfig.templateType" style="font-weight: bold;font-family: bold;"></td>
                 <td ng-show="!isValidRepository" class="danger">N/A</td>
             </tr>
             </tbody>
         </table>
-        <form>
+    </div>
+    <div class="col-md-6">
+        <h2>Settings</h2>
+        <form >
             <div class="form-group">
                 <label for="iisHostName">Host name</label>
                 <input type="text" class="form-control" ng-model="repoConfig.hostName" id="iisHostName" ng-disabled="repoConfig.templateType === 'Unknown'"/>
             </div>
         </form>
+        <upload-settings owner-name="ownerName" repo-name="repoName" is-disabled="repoConfig.templateType === 'Unknown'"></upload-settings>
     </div>
-    <upload-settings owner-name="ownerName" repo-name="repoName" is-disabled="repoConfig.templateType === 'Unknown'"></upload-settings>
+
     <button type="button"
             class="btn btn-primary pull-right"
             ng-disabled="!(!creating && !projectExists && isValidRepository && repoConfig.hostName && hasAppSettings)"

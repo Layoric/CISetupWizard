@@ -28,7 +28,8 @@
             return {
                 restrict: 'E',
                 scope: {
-                    onSelect: '&'
+                    onSelect: '&',
+                    excludedRepositories: '='
                 },
                 templateUrl: 'js/github/show-repos.html',
                 controller: function ($scope, $element, $attrs) {
@@ -37,6 +38,20 @@
                             $scope.onSelect({repo:repo});
                         }
                     };
+
+                    $scope.$watch('search.orgName', function (newVal,oldVal) {
+                        console.log(newVal);
+                       //On change, remove  values from
+                        if(newVal && newVal != '') {
+                            console.log('filtering by name');
+                            $scope.selectedOrgs = $scope.allOrgs.filter(function (val) {
+                                return val.orgName === newVal;
+                            })
+                        } else {
+                            console.log('no name, show all');
+                            $scope.selectedOrgs = angular.copy($scope.allOrgs);
+                        }
+                    });
 
                     authentication.getUserDetails().then(function (response) {
                         $scope.isLoading = true;
@@ -56,12 +71,18 @@
                             orgs.move(orgs.indexOf(userOrg),0);
                             $scope.isLoading = false;
                             $scope.allOrgs = orgs;
+                            $scope.selectedOrgs = angular.copy(orgs);
                         });
                     });
 
-                    function endsWith(str, suffix) {
-                        return str.indexOf(suffix, str.length - suffix.length) !== -1;
-                    }
+                    $scope.filterBySelectedOrg = function (orgName) {
+                      for(var i = 0; i < $scope.allOrgs.length; i++) {
+                          var org = $scope.allOrgs[i];
+                          if(org.orgName === orgName) {
+
+                          }
+                      }
+                    };
 
                     function getObjFromArrayWithPropValue(array, propName, propVal) {
                         for(var i = 0; i < array.length; i++) {

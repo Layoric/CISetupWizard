@@ -3,11 +3,20 @@
         <img src="/img/Loading_icon.gif" />
     </div>
     <div ng-show="!isLoading">
-        <div class="form-group">
-            <label for="filterRepos">Search</label>
-            <input type="text" id="filterRepos" ng-model="search.val" class="form-control">
+        <div>
+            <div class="form-group col-md-6">
+                <label for="filterRepos">Search</label>
+                <input type="text" id="filterRepos" ng-model="search.val" class="form-control">
+            </div>
+            <div class="form-group col-md-6">
+                <label for="filterOrgs">Organizations</label>
+                <select id="filterOrgs" ng-model="search.orgName" class="form-control">
+                    <option></option>
+                    <option ng-repeat="org in allOrgs" ng-bind="org.orgName" value="{{org.orgName}}"></option>
+                </select>
+            </div>
         </div>
-        <div ng-repeat="org in allOrgs" ng-show="(org.repos | filter: { name: search.val }).length > 0">
+        <div ng-repeat="org in selectedOrgs" ng-show="(org.repos | filter: { name: search.val }).length > 0 || (search.orgName && search.orgName != '')">
             <h3 ng-bind="org.orgName"></h3>
             <table class="table table-striped table-hover">
                 <thead>

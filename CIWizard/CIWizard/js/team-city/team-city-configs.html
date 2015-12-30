@@ -4,15 +4,11 @@
         <thead>
             <tr>
                 <td>Name</td>
-                <td>Status</td>
-                <td>Last Updated</td>
             </tr>
         </thead>
         <tbody>
             <tr ng-repeat="tcConfig in teamCityConfigs">
                 <td><a href="#/manage/{{tcConfig.owner.login}}/{{tcConfig.name}}" ng-bind="tcConfig.name"></a></td>
-                <td><a href="#/manage/{{tcConfig.owner}}/{{tcConfig.name}}" ng-bind="tcConfig.status"></a></td>
-                <td><a href="#/manage/{{tcConfig.owner}}/{{tcConfig.name}}" ng-bind="tcConfig.lastUpdated | date: 'yyyy/MM/dd'"></a></td>
             </tr>
         </tbody>
     </table>
