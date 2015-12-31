@@ -2,7 +2,8 @@
 (function () {
     "use strict";
     var module = angular.module('upload-settings',[
-        'local-services'
+        'local-services',
+        'ciwizard.files'
     ]);
 
     module.directive('uploadSettings', ['localServices','fileUpload', function (localServices,fileUpload) {
@@ -11,7 +12,8 @@
             scope: {
                 ownerName: '=',
                 repoName: '=',
-                isDisabled: '='
+                isDisabled: '=',
+                hasAppSettings: '='
             },
             templateUrl: 'js/upload-settings/upload.html',
             controller: function ($scope, $element, $attrs) {

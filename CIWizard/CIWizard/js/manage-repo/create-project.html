@@ -39,7 +39,7 @@
                 <input type="text" class="form-control" ng-model="repoConfig.hostName" id="iisHostName" ng-disabled="repoConfig.templateType === 'Unknown'"/>
             </div>
         </form>
-        <upload-settings owner-name="ownerName" repo-name="repoName" is-disabled="repoConfig.templateType === 'Unknown'"></upload-settings>
+        <upload-settings owner-name="ownerName" repo-name="repoName" is-disabled="repoConfig.templateType === 'Unknown'" has-app-settings="hasAppSettings"></upload-settings>
     </div>
 
     <button type="button"

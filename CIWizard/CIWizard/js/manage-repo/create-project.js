@@ -8,6 +8,7 @@
 
     module.controller('createProjectCtrl', ['$scope', '$routeParams', 'localServices', 'fileUpload',
         function ($scope, $routeParams, localServices, fileUpload) {
+            $scope.hasAppSettings = false;
             $scope.loadingUserRepo = true;
             $scope.loadingSolutionDetails = true;
             $scope.ready = false;
