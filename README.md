@@ -3,7 +3,7 @@ TeamCity v9 client using ServiceStack.Client with demo AppHost, still a work in 
 
 ### AMI Setup
 1. Install TeamCity
-2. Install [TeamCity.Node](https://github.com/jonnyzzz/TeamCity.Node) plugin
+2. Install [TeamCity.Node](https://github.com/jonnyzzz/TeamCity.Node) plugin (specifically 1.0.58)
 3. Add Default NuGet verison in TeamCity admin.
 4. Add IIS + ASP.NET Role
 5. Use Web Platform Installer to Add Web Deploy
