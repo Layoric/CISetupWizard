@@ -17,7 +17,7 @@ TeamCity v9 client using ServiceStack.Client with demo AppHost, still a work in 
 13. Create `wizard_deploy` 'IIS Manager' user.
 ![](https://github.com/Layoric/TeamCityClient/raw/master/images/iis-manage.png)
 14. Add `ss.msdeploy.username` and `ss.msdeploy.password` as `wizard_deploy` credentials to `_Root` TC project.
-15. Deploy CIWizard app locally, remembering to assign `CIWizard` user to app pool.
+15. Deploy CIWizard app locally, remembering to assign `CIWizard` user to app pool. (Match name of app to repo so the app can create it's own TC project to iterate locally)
 
 Lastly, edit `config.xml` of Amazon settings, update `EC2SetPassword` to `Enabled` and then stop EC2 instance and create AMI.
 
