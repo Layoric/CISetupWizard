@@ -67,22 +67,25 @@
                         if(!$scope.allRepos || $scope.allRepos.length == 0) {
                             return;
                         }
-                        $scope.excludedRepositories = $scope.excludedRepositories || [];
+
 
                         for(var repoIndex = 0; repoIndex < $scope.allRepos.length; repoIndex++) {
                             var repo = $scope.allRepos[repoIndex];
                             var skipRepo = false;
-                            for(var excludeIndex = 0; excludeIndex < $scope.excludedRepositories.length; excludeIndex++) {
-                                var excludedRepo = $scope.excludedRepositories[excludeIndex];
-                                if(excludedRepo.orgName == repo.owner.login &&
-                                    excludedRepo.name == repo.name)  {
-                                    skipRepo = true;
-                                    break;
+                            if($scope.excludedRepositories && $scope.excludedRepositories.length > 0) {
+                                for(var excludeIndex = 0; excludeIndex < $scope.excludedRepositories.length; excludeIndex++) {
+                                    var excludedRepo = $scope.excludedRepositories[excludeIndex];
+                                    if(excludedRepo.orgName == repo.owner.login &&
+                                        excludedRepo.name == repo.name)  {
+                                        skipRepo = true;
+                                        break;
+                                    }
                                 }
+
+                                if(skipRepo)
+                                    continue;
                             }
 
-                            if(skipRepo)
-                                continue;
 
                             var org = getObjFromArrayWithPropValue(orgs,'orgName',repo.owner.login);
                             if(!org) {
