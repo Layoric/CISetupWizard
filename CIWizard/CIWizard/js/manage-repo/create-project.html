@@ -35,8 +35,9 @@
         <h2>Settings</h2>
         <form >
             <div class="form-group">
-                <label for="localOnlyAppCheckbox">Local Only Site?</label>
-                <input type="checkbox" class="form-control" ng-model="repoConfig.localOnlyApp" id="localOnlyAppCheckbox" ng-disabled="repoConfig.templateType === 'Unknown'"/>
+                <div class="checkbox">
+                    <label for="localOnlyAppCheckbox"><input type="checkbox" ng-model="repoConfig.localOnlyApp" id="localOnlyAppCheckbox" ng-disabled="repoConfig.templateType === 'Unknown'"/>Local Only Site?</label>
+                </div>
             </div>
             <div class="form-group" ng-show="!repoConfig.localOnlyApp">
                 <label for="iisHostName">Host name</label>

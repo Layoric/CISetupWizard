@@ -13,6 +13,7 @@
             $scope.ready = false;
             $scope.ownerName = $routeParams.ownerName;
             $scope.repoName = $routeParams.repoName;
+            $scope.repoConfig = $scope.repoConfig || {};
 
             $scope.$watch('repoConfig.localOnlySite', function (newVal) {
                 if(newVal)
