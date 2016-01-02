@@ -1,7 +1,7 @@
 ﻿<div class="row">
     <github-login-splash ng-show="!isAuthenticated"></github-login-splash>
     <div class="col-md-3">
-        <teamcity-configs style="margin-bottom: 2em"></teamcity-configs>
+        <teamcity-configs style="margin-bottom: 2em" team-city-configs="teamCityConfigs"></teamcity-configs>
     </div>
     <div class="col-md-9">
         <github-select-repo ng-show="isAuthenticated" on-select="onRepoSelect(repo)"></github-select-repo>

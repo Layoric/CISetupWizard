@@ -6,6 +6,21 @@
     ]);
     module.controller('homeCtrl', ['$scope', 'authentication', '$timeout','$location',
         function ($scope, authentication, $timeout,$location) {
+            $scope.teamCityConfigs = [];
+            $scope.excludedRepositories = [];
+            $scope.$watch('teamCityConfigs', function () {
+                if($scope.teamCityConfigs) {
+                    for(var i = 0; $scope.teamCityConfigs.length; i++) {
+                        var teamCityRepo = $scope.teamCityConfigs[i];
+                        console.log(teamCityRepo);
+                        $scope.excludedRepositories.push({
+                            name: teamCityRepo,
+                            ownerName: teamCityRepo.owner.login
+                        });
+                    }
+                }
+            });
+
             authentication.isAuthenticated().then(function (response) {
                 $timeout(function () {
                     $scope.isAuthenticated = true;

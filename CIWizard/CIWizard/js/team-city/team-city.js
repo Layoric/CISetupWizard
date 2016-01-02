@@ -9,6 +9,7 @@
         return {
             restrict: 'E',
             scope: {
+                teamCityConfigs: '='
             },
             templateUrl: '/js/team-city/team-city-configs.html',
             controller: function ($scope, $element, $attrs) {

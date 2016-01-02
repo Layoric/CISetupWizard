@@ -67,6 +67,8 @@
                         if(!$scope.allRepos || $scope.allRepos.length == 0) {
                             return;
                         }
+                        $scope.excludedRepositories = $scope.excludedRepositories || [];
+
                         for(var repoIndex = 0; repoIndex < $scope.allRepos.length; repoIndex++) {
                             var repo = $scope.allRepos[repoIndex];
                             var skipRepo = false;
