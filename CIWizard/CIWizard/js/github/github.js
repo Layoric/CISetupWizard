@@ -93,7 +93,7 @@
                             org.repos.push(repo);
                         }
                         //Put user 'org' first
-                        var userOrg = getObjFromArrayWithPropValue(orgs, 'orgName', response.userName);
+                        var userOrg = getObjFromArrayWithPropValue(orgs, 'orgName', $scope.userOwerName);
                         orgs.move(orgs.indexOf(userOrg),0);
                         $scope.isLoading = false;
                         $scope.allOrgs = orgs;
@@ -102,6 +102,7 @@
 
                     authentication.getUserDetails().then(function (userResponse) {
                         $scope.isLoading = true;
+                        $scope.userOwerName = userResponse.userName;
                         localServices.getUserRepos().then(function (response) {
                             $scope.allRepos = response.data.repos;
                         });
