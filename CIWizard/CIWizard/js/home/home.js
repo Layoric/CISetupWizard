@@ -8,15 +8,16 @@
         function ($scope, authentication, $timeout,$location) {
             $scope.teamCityConfigs = [];
             $scope.excludedRepositories = [];
-            $scope.$watch('teamCityConfigs', function () {
-                if($scope.teamCityConfigs) {
-                    for(var i = 0; $scope.teamCityConfigs.length; i++) {
-                        var teamCityRepo = $scope.teamCityConfigs[i];
+            $scope.$watch('teamCityConfigs', function (newVal) {
+                if(newVal) {
+                    console.log(newVal.length);
+                    for(var i = 0; i < newVal.length; i++) {
+                        var teamCityRepo = newVal[i];
                         console.log(teamCityRepo);
                         if(teamCityRepo == null)
                             continue;
                         $scope.excludedRepositories.push({
-                            name: teamCityRepo,
+                            name: teamCityRepo.name,
                             ownerName: teamCityRepo.owner.login
                         });
                     }

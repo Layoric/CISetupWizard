@@ -68,14 +68,13 @@
                             return;
                         }
 
-
                         for(var repoIndex = 0; repoIndex < $scope.allRepos.length; repoIndex++) {
                             var repo = $scope.allRepos[repoIndex];
                             var skipRepo = false;
                             if($scope.excludedRepositories && $scope.excludedRepositories.length > 0) {
                                 for(var excludeIndex = 0; excludeIndex < $scope.excludedRepositories.length; excludeIndex++) {
                                     var excludedRepo = $scope.excludedRepositories[excludeIndex];
-                                    if(excludedRepo.orgName == repo.owner.login &&
+                                    if(excludedRepo.ownerName == repo.owner.login &&
                                         excludedRepo.name == repo.name)  {
                                         skipRepo = true;
                                         break;
@@ -85,7 +84,6 @@
                                 if(skipRepo)
                                     continue;
                             }
-
 
                             var org = getObjFromArrayWithPropValue(orgs,'orgName',repo.owner.login);
                             if(!org) {
