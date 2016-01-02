@@ -52,7 +52,7 @@
 
     <button type="button"
             class="btn btn-primary pull-right"
-            ng-disabled="!(!creating && !projectExists && isValidRepository && (repoConfig.hostName || (repoConfig.localOnlyApp && repoConfig.port)) && hasAppSettings)"
+            ng-disabled="!(!creating && !projectExists && isValidRepository && (repoConfig.hostName || (repoConfig.localOnlyApp && repoConfig.port)) && hasAppSettings && !success)"
             ng-click="createBuild()">Create TeamCity Project</button>
 
     <div ng-show="ready && success">
