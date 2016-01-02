@@ -4,6 +4,6 @@
         <teamcity-configs style="margin-bottom: 2em" team-city-configs="teamCityConfigs"></teamcity-configs>
     </div>
     <div class="col-md-9">
-        <github-select-repo ng-show="isAuthenticated" on-select="onRepoSelect(repo)"></github-select-repo>
+        <github-select-repo ng-show="isAuthenticated" on-select="onRepoSelect(repo)" excluded-repositories="excludedRepositories"></github-select-repo>
     </div>
 </div>
