@@ -50,36 +50,63 @@
                         }
                     });
 
-                    authentication.getUserDetails().then(function (response) {
-                        $scope.isLoading = true;
-                        var orgs = [];
-                        localServices.getUserRepos().then(function (response) {
-                            angular.forEach(response.data.repos, function (repo) {
-                                var org = getObjFromArrayWithPropValue(orgs,'orgName',repo.owner.login);
-                                if(!org) {
-                                    org = { orgName: repo.owner.login};
-                                    orgs.push(org)
-                                }
-                                org.repos = org.repos || [];
-                                org.repos.push(repo);
-                            });
-                            //Put user 'org' first
-                            var userOrg = getObjFromArrayWithPropValue(orgs, 'orgName', response.userName);
-                            orgs.move(orgs.indexOf(userOrg),0);
-                            $scope.isLoading = false;
-                            $scope.allOrgs = orgs;
-                            $scope.selectedOrgs = angular.copy(orgs);
-                        });
+                    $scope.$watch('allRepos', function () {
+                        if($scope.allRepos && $scope.allRepos.length > 0) {
+                            filterRepositories();
+                        }
                     });
 
-                    $scope.filterBySelectedOrg = function (orgName) {
-                      for(var i = 0; i < $scope.allOrgs.length; i++) {
-                          var org = $scope.allOrgs[i];
-                          if(org.orgName === orgName) {
+                    $scope.$watch('excludedRepositories', function () {
+                        if($scope.excludedRepositories && $scope.excludedRepositories.length > 0) {
+                            filterRepositories();
+                        }
+                    });
 
-                          }
-                      }
-                    };
+                    function filterRepositories() {
+                        var orgs = [];
+                        if(!$scope.allRepos || $scope.allRepos.length == 0) {
+                            return;
+                        }
+                        if(!$scope.excludedRepositories || $scope.excludedRepositories.length == 0) {
+                            return;
+                        }
+                        for(var repoIndex = 0; repoIndex < $scope.allRepos; repoIndex++) {
+                            var repo = $scope.allRepos[repoIndex];
+                            var skipRepo = false;
+                            for(var excludeIndex = 0; excludeIndex < $scope.excludedRepositories; excludeIndex++) {
+                                var excludedRepo = $scope.excludedRepositories[excludeIndex];
+                                if(excludedRepo.orgName == repo.owner.login &&
+                                    excludedRepo.name == repo.name)  {
+                                    skipRepo = true;
+                                    break;
+                                }
+                            }
+
+                            if(skipRepo)
+                                continue;
+
+                            var org = getObjFromArrayWithPropValue(orgs,'orgName',repo.owner.login);
+                            if(!org) {
+                                org = { orgName: repo.owner.login};
+                                orgs.push(org)
+                            }
+                            org.repos = org.repos || [];
+                            org.repos.push(repo);
+                        }
+                        //Put user 'org' first
+                        var userOrg = getObjFromArrayWithPropValue(orgs, 'orgName', response.userName);
+                        orgs.move(orgs.indexOf(userOrg),0);
+                        $scope.isLoading = false;
+                        $scope.allOrgs = orgs;
+                        $scope.selectedOrgs = angular.copy(orgs);
+                    }
+
+                    authentication.getUserDetails().then(function (userResponse) {
+                        $scope.isLoading = true;
+                        localServices.getUserRepos().then(function (response) {
+                            $scope.allRepos = response.data.repos;
+                        });
+                    });
 
                     function getObjFromArrayWithPropValue(array, propName, propVal) {
                         for(var i = 0; i < array.length; i++) {

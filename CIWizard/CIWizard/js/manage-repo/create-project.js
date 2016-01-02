@@ -6,8 +6,8 @@
         'ciwizard.files'
     ]);
 
-    module.controller('createProjectCtrl', ['$scope', '$routeParams', 'localServices', 'fileUpload',
-        function ($scope, $routeParams, localServices, fileUpload) {
+    module.controller('createProjectCtrl', ['$scope', '$routeParams', 'localServices','$timeout','$location',
+        function ($scope, $routeParams, localServices,$timeout,$location) {
             $scope.loadingUserRepo = true;
             $scope.loadingSolutionDetails = true;
             $scope.ready = false;
@@ -63,6 +63,9 @@
                 localServices.createTeamCityBuild(request).then(function (response) {
                     $scope.success = true;
                     $scope.creating = false;
+                    $timeout(function () {
+                        $location.path('/manage/' + $routeParams.ownerName + '/' + $routeParams.repoName);
+                    },2000);
                 }, function (response) {
                     $scope.creating = false;
                 });
