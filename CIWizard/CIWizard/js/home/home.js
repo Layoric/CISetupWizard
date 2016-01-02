@@ -13,6 +13,8 @@
                     for(var i = 0; $scope.teamCityConfigs.length; i++) {
                         var teamCityRepo = $scope.teamCityConfigs[i];
                         console.log(teamCityRepo);
+                        if(teamCityRepo == null)
+                            continue;
                         $scope.excludedRepositories.push({
                             name: teamCityRepo,
                             ownerName: teamCityRepo.owner.login
