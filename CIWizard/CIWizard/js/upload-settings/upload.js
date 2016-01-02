@@ -17,12 +17,21 @@
             },
             templateUrl: 'js/upload-settings/upload.html',
             controller: function ($scope, $element, $attrs) {
+                $scope.localAppSettings = false;
                 $scope.getFiles = function () {
                     localServices.getProjectFiles($scope.ownerName,$scope.repoName).then(function (response) {
+                        $scope.localAppSettings = false;
                         for(var i = 0; i < response.data.fileNames.length;i++) {
                             var file = response.data.fileNames[i];
-                            if(file === "appsettings.txt")
-                                $scope.hasAppSettings = true;
+                            if(file === "appsettings.txt") {
+                                // use {} and null cause of two way binding issues with primitives..
+                                $scope.hasAppSettings = {};
+                                $scope.localAppSettings = true;
+                            }
+                        }
+                        if(!$scope.localAppSettings) {
+                            // use {} and null cause of two way binding issues with primitives..
+                            $scope.hasAppSettings = null;
                         }
                         $scope.files = response.data.fileNames;
                     });

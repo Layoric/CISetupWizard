@@ -35,8 +35,37 @@ namespace CIWizard.ServiceInterface
                 sm.CommitChanges();
 
                 AddMsDeployAccessToSite(sm, siteName, "wizard_deploy");
+            }
+        }
+
+        public static void AddLocalOnlySite(string siteName, int port)
+        {
+            using (var sm = new ServerManager())
+            {
+                var invalidChars = SiteCollection.InvalidSiteNameCharacters();
+                if (siteName.IndexOfAny(invalidChars) > -1)
+                {
+                    throw new Exception("Invalid Site Name: {0}".Fmt(siteName));
+                }
+                var appPool = AddAppPool(sm, siteName, "v4.0", ManagedPipelineMode.Integrated);
+                if (sm.Sites[siteName] != null)
+                {
+
+                    return;
+                }
+                string path = "C:\\inetpub\\wwwroot\\{0}".Fmt(siteName);
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+                var site = sm.Sites.Add(siteName, path, port);
+                site.ServerAutoStart = true;
+                site.ApplicationDefaults.ApplicationPoolName = appPool.Name;
+                // Set HostName info for binding
 
                 sm.CommitChanges();
+
+                AddMsDeployAccessToSite(sm, siteName, "wizard_deploy");
             }
         }
 
@@ -68,9 +97,19 @@ namespace CIWizard.ServiceInterface
             }
 
             ConfigurationElementCollection scopeCollection = scopeElement.GetCollection();
-            ConfigurationElement addElement = scopeCollection.CreateElement("add");
-            addElement["name"] = iisMgrUserName;
-            scopeCollection.Add(addElement);
+            
+            bool hasAccessAlready = false;
+            foreach (var childElement in scopeCollection.ChildElements)
+            {
+                if ((string) childElement.GetAttributeValue("name") == iisMgrUserName)
+                    hasAccessAlready = true;
+            }
+            if (!hasAccessAlready)
+            {
+                ConfigurationElement addElement = scopeCollection.CreateElement("add");
+                addElement["name"] = iisMgrUserName;
+                scopeCollection.Add(addElement);
+            }
 
             sm.CommitChanges();
         }

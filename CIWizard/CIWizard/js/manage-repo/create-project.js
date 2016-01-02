@@ -8,12 +8,18 @@
 
     module.controller('createProjectCtrl', ['$scope', '$routeParams', 'localServices', 'fileUpload',
         function ($scope, $routeParams, localServices, fileUpload) {
-            $scope.hasAppSettings = false;
             $scope.loadingUserRepo = true;
             $scope.loadingSolutionDetails = true;
             $scope.ready = false;
             $scope.ownerName = $routeParams.ownerName;
             $scope.repoName = $routeParams.repoName;
+
+            $scope.$watch('repoConfig.localOnlySite', function (newVal) {
+                if(newVal)
+                    $scope.repoConfig.hostName = null;
+                else
+                    $scope.repoConfig.port = null;
+            });
             //Get repo
             localServices.getUserRepo($routeParams.ownerName, $routeParams.repoName).then(function (response) {
                 $scope.repo = response.data.repo;
@@ -50,7 +56,9 @@
                     projectName: $scope.repoConfig.projectName,
                     privateRepository: $scope.repoConfig.privateRepository,
                     solutionPath: $scope.repoConfig.solutionPath,
-                    hostName: $scope.repoConfig.hostName
+                    hostName: $scope.repoConfig.hostName,
+                    localOnlyApp: $scope.repoConfig.localOnlyApp,
+                    port: $scope.repoConfig.port
                 };
                 localServices.createTeamCityBuild(request).then(function (response) {
                     $scope.success = true;

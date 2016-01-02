@@ -167,7 +167,7 @@ namespace CIWizard.ServiceInterface
             return getWebDeployPackStep;
         }
 
-        public static CreateBuildStep GetWebDeployPush(string buildConfigId, string workingDirectory,string appName, string endpoint)
+        public static CreateBuildStep GetWebDeployPush(string buildConfigId, string workingDirectory)
         {
             var getWebDeployPush = new CreateBuildStep
             {
@@ -177,9 +177,8 @@ namespace CIWizard.ServiceInterface
                 StepProperties = new CreateTeamCityProperties()
                     .AddTeamCityProperty("command.executable", "%env.MSDeployPath%\\msdeploy.exe")
                     .AddTeamCityProperty(
-                    "command.parameters", 
-                    "-verb:sync -source:package=\"%teamcity.build.workingDir%\\webapp.zip\" -dest:iisApp=\"{0}\",wmsvc={1},username=%ss.msdeploy.username%,password=%ss.msdeploy.password% -allowUntrusted=true"
-                            .Fmt(appName,endpoint)
+                    "command.parameters",
+                    "-verb:sync -source:package=\"%teamcity.build.workingDir%\\webapp.zip\" -dest:iisApp=\"%ss.msdeploy.iisApp%\",wmsvc=%ss.msdeploy.serverAddress%,username=%ss.msdeploy.username%,password=%ss.msdeploy.password% -allowUntrusted=true"
                     )
                     .AddTeamCityProperty(BuildConfigWorkingDirPropertyName, workingDirectory)
                     .AddTeamCityProperty(StepModePropertyName, "default")
@@ -202,6 +201,20 @@ namespace CIWizard.ServiceInterface
             if(properties.Properties == null) properties.Properties = new List<CreateTeamCityProperty>();
             properties.Properties.Add(CreateTeamCityProperty(name,val));
             return properties;
+        }
+
+        public static CreateTeamCityBuildParameter CreateTeamCityBuildParameter(string buildConfigId, string key, string value, string type)
+        {
+            var result = new CreateTeamCityBuildParameter
+            {
+                Name = key,
+                Value = value,
+                Type = new CreateTeamCityBuildParameterType
+                {
+                    Value = type
+                }
+            };
+            return result;
         }
 
         public static CreateTrigger GetCreateVcsTrigger(string buildConfigId)

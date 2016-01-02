@@ -8,11 +8,8 @@ using CIWizard.ServiceModel;
 using CIWizard.ServiceModel.Types;
 using ServiceStack;
 using ServiceStack.Configuration;
-using ServiceStack.IO;
 using ServiceStack.Logging;
 using ServiceStack.TeamCityClient;
-using ServiceStack.TeamCityClient.Types;
-using ServiceStack.VirtualPath;
 
 namespace CIWizard.ServiceInterface
 {
@@ -20,10 +17,11 @@ namespace CIWizard.ServiceInterface
     {
         public TcClient TeamCityClient { get; set; }
         public IAppSettings AppSettings { get; set; }
-        public static ILog Log = LogManager.GetLogger(typeof(TeamCityWizardService));
+        public static ILog Log = LogManager.GetLogger(typeof (TeamCityWizardService));
 
         public CreateSpaBuildProjectResponse Post(CreateSpaBuildProject request)
         {
+            Log.Info(request.ToJson());
             var session = SessionAs<AuthUserSession>();
             var gitHubToken = session.GetGitHubAccessToken();
 
@@ -33,13 +31,15 @@ namespace CIWizard.ServiceInterface
 
             try
             {
-                IisHelper.AddSite(request.Name, request.HostName);
+                if(!request.LocalOnlyApp)
+                    IisHelper.AddSite(request.Name, request.HostName);
+                else
+                    IisHelper.AddLocalOnlySite(request.Name, request.Port);
             }
             catch (Exception e)
             {
-                Log.Error(e.Message,e);
+                Log.Error(e.Message, e);
             }
-            
 
             var createBuildConfig = new CreateBuildConfig
             {
@@ -47,38 +47,27 @@ namespace CIWizard.ServiceInterface
                 Name = "Build and Deploy"
             };
             var buildConfigResponse = TeamCityClient.CreateBuildConfig(createBuildConfig);
+
+            TeamCityClient.UpdateBuildConfigParameters(new UpdateBuildConfigParameters
+            {
+                Locator = "id:" + buildConfigResponse.Id,
+                Properties = new List<CreateTeamCityBuildParameter>
+                {
+                    TeamCityRequestBuilder
+                        .CreateTeamCityBuildParameter(buildConfigResponse.Id, "ss.msdeploy.serverAddress", "localhost",
+                            "text validationMode='any' display='normal'"),
+                    TeamCityRequestBuilder
+                        .CreateTeamCityBuildParameter(buildConfigResponse.Id, "ss.msdeploy.iisApp", request.Name,
+                            "text validationMode='any' display='normal'")
+                }
+            });
+
             TeamCityClient.UpdateBuildConfigSettings(new UpdateBuildConfigSetting
             {
                 Locator = "id:" + buildConfigResponse.Id,
                 SettingId = "artifactRules",
                 Value = request.WorkingDirectory + "/wwwroot => " + request.WorkingDirectory + "/wwwroot"
             });
-
-            //TeamCityClient.UpdateBuildConfigParameters(new UpdateBuildConfigParameters
-            //{
-            //    Locator = "id:" + buildConfigResponse.Id,
-            //    Properties = new List<CreateTeamCityBuildParameter>
-            //    {
-            //        new CreateTeamCityBuildParameter
-            //        {
-            //            Name = "ss.msdeploy.username",
-            //            Value = request.MsDeployUserName,
-            //            Type = new CreateTeamCityBuildParameterType
-            //            {
-            //                Value = "text validationMode='any' display='normal'"
-            //            }
-            //        },
-            //        new CreateTeamCityBuildParameter
-            //        {
-            //            Name = "ss.msdeploy.password",
-            //            Value = request.MsDeployPassword,
-            //            Type = new CreateTeamCityBuildParameterType
-            //            {
-            //                Value = "password display='normal'"
-            //            }
-            //        }
-            //    }
-            //});
 
             AttachVcsToProject(buildConfigResponse, vcsResponse);
             CreateVcsTrigger(buildConfigResponse);
@@ -87,7 +76,6 @@ namespace CIWizard.ServiceInterface
             CreateBowerInstallStep(request, buildConfigResponse);
             CreateNuGetRestoreStep(request, buildConfigResponse);
             CreateGruntStep(request, buildConfigResponse);
-
             CreateCopyAppSettingsStep(request, buildConfigResponse);
             CreateWebDeployPackStep(request, buildConfigResponse);
             CreateWebDeployPushStep(request, buildConfigResponse);
@@ -108,7 +96,7 @@ namespace CIWizard.ServiceInterface
 
         public void Delete(DeleteTeamCityProject request)
         {
-            TeamCityClient.DeleteProject(new DeleteProject { Locator = "id:" + request.ProjectId});
+            TeamCityClient.DeleteProject(new DeleteProject {Locator = "id:" + request.ProjectId});
         }
 
         public GetTeamCityUrlResponse Get(GetTeamCityUrl request)
@@ -175,12 +163,14 @@ namespace CIWizard.ServiceInterface
         public GetApplicationSettingsFilesResponse Get(GetApplicationSettingsFiles request)
         {
             List<string> files = new List<string>();
-            DirectoryInfo projectFolder = new DirectoryInfo("{0}{1}\\{2}\\".Fmt(AppSettings.GetString("ApplicationSettingsBaseFolder"),request.OwnerName,request.RepositoryName));
+            DirectoryInfo projectFolder =
+                new DirectoryInfo("{0}{1}\\{2}\\".Fmt(AppSettings.GetString("ApplicationSettingsBaseFolder"),
+                    request.OwnerName, request.RepositoryName));
             if (projectFolder.Exists)
             {
                 files.AddRange(projectFolder.GetFiles().Select(x => x.Name));
             }
-            
+
             return new GetApplicationSettingsFilesResponse
             {
                 FileNames = files
@@ -202,7 +192,8 @@ namespace CIWizard.ServiceInterface
             };
         }
 
-        private static List<GitHubRepository> GetConfiguredRepos(List<GitHubRepository> allGhProjects, GetProjectsResponse allTcProjs)
+        private static List<GitHubRepository> GetConfiguredRepos(List<GitHubRepository> allGhProjects,
+            GetProjectsResponse allTcProjs)
         {
             // Generated projects are created with "SS_" prefix and end with project name, owners can vary
             return allGhProjects.Where(x =>
@@ -221,7 +212,7 @@ namespace CIWizard.ServiceInterface
             GetBuildResponse builds;
             try
             {
-                builds = TeamCityClient.GetBuild(new GetBuild { BuildLocator = "project:id:" + request.ProjectId });
+                builds = TeamCityClient.GetBuild(new GetBuild {BuildLocator = "project:id:" + request.ProjectId});
             }
             catch (WebException e)
             {
@@ -243,81 +234,65 @@ namespace CIWizard.ServiceInterface
             };
         }
 
-        private CreateBuildStepResponse CreateNpmInstallStep(CreateSpaBuildProject request,
-            CreateBuildConfigResponse buildConfigResponse)
+        private void CreateNpmInstallStep(CreateSpaBuildProject request, CreateBuildConfigResponse buildConfigResponse)
         {
-            var npmStepResponse = TeamCityClient.CreateBuildStep(
-                TeamCityRequestBuilder.GetNpmInstallStepRequest(buildConfigResponse.Id,request.WorkingDirectory));
-            return npmStepResponse;
+            TeamCityClient.CreateBuildStep(
+                TeamCityRequestBuilder.GetNpmInstallStepRequest(buildConfigResponse.Id, request.WorkingDirectory));
         }
 
-        private AttachVcsEntryResponse AttachVcsToProject(CreateBuildConfigResponse buildConfigResponse,
-            CreateVcsRootResponse vcsResponse)
+        private void AttachVcsToProject(CreateBuildConfigResponse buildConfigResponse, CreateVcsRootResponse vcsResponse)
         {
-            var attachResponse = TeamCityClient.AttachVcsEntries(
-                TeamCityRequestBuilder.GetAttachVcsEntriesRequest(buildConfigResponse.Id,vcsResponse.Id));
-            return attachResponse;
+            TeamCityClient.AttachVcsEntries(
+                TeamCityRequestBuilder.GetAttachVcsEntriesRequest(buildConfigResponse.Id, vcsResponse.Id));
         }
 
-        private CreateTriggerResponse CreateVcsTrigger(CreateBuildConfigResponse buildConfigResponse)
+        private void CreateVcsTrigger(CreateBuildConfigResponse buildConfigResponse)
         {
-            var triggerResponse =
-                TeamCityClient.CreateTrigger(TeamCityRequestBuilder.GetCreateVcsTrigger(buildConfigResponse.Id));
-            return triggerResponse;
+            TeamCityClient.CreateTrigger(TeamCityRequestBuilder.GetCreateVcsTrigger(buildConfigResponse.Id));
         }
 
-        private CreateBuildStepResponse CreateBowerInstallStep(CreateSpaBuildProject request,
-            CreateBuildConfigResponse buildConfigResponse)
+        private void CreateBowerInstallStep(CreateSpaBuildProject request, CreateBuildConfigResponse buildConfigResponse)
         {
-            var bowerInstallStep = TeamCityClient.CreateBuildStep(
+            TeamCityClient.CreateBuildStep(
                 TeamCityRequestBuilder.GetBowerInstallBuildStep(buildConfigResponse.Id, request.WorkingDirectory));
-            return bowerInstallStep;
         }
 
-        private CreateBuildStepResponse CreateNuGetRestoreStep(CreateSpaBuildProject request, CreateBuildConfigResponse buildConfigResponse)
+        private void CreateNuGetRestoreStep(CreateSpaBuildProject request, CreateBuildConfigResponse buildConfigResponse)
         {
-            var nuGetRestoreStep = TeamCityClient.CreateBuildStep(
-               TeamCityRequestBuilder.GetNuGetRestoreBuildStep(buildConfigResponse.Id, request.SolutionPath));
-            return nuGetRestoreStep;
+            TeamCityClient.CreateBuildStep(
+                TeamCityRequestBuilder.GetNuGetRestoreBuildStep(buildConfigResponse.Id, request.SolutionPath));
         }
 
-        private CreateBuildStepResponse CreateGruntStep(CreateSpaBuildProject request,
-            CreateBuildConfigResponse buildConfigResponse)
+        private void CreateGruntStep(CreateSpaBuildProject request, CreateBuildConfigResponse buildConfigResponse)
         {
-            var gruntStep = TeamCityClient.CreateBuildStep(
-               TeamCityRequestBuilder.GetGruntBuildStep(buildConfigResponse.Id, request.WorkingDirectory));
-            return gruntStep;
+            TeamCityClient.CreateBuildStep(
+                TeamCityRequestBuilder.GetGruntBuildStep(buildConfigResponse.Id, request.WorkingDirectory));
         }
 
-        private CreateBuildStepResponse CreateCopyAppSettingsStep(CreateSpaBuildProject request,
-            CreateBuildConfigResponse buildConfigResponse)
+        private void CreateCopyAppSettingsStep(CreateSpaBuildProject request, CreateBuildConfigResponse buildConfigResponse)
         {
-            var copyAppSettingsStep = TeamCityClient.CreateBuildStep(
-               TeamCityRequestBuilder.GetCopyAppSettingsStep(buildConfigResponse.Id, 
-               request.WorkingDirectory, 
-               AppSettings.GetString("ApplicationSettingsBaseFolder"), 
-               request.OwnerName,
-               request.Name));
-            return copyAppSettingsStep;
+            TeamCityClient.CreateBuildStep(
+                TeamCityRequestBuilder.GetCopyAppSettingsStep(buildConfigResponse.Id,
+                    request.WorkingDirectory,
+                    AppSettings.GetString("ApplicationSettingsBaseFolder"),
+                    request.OwnerName,
+                    request.Name));
         }
 
-        private CreateBuildStepResponse CreateWebDeployPackStep(CreateSpaBuildProject request,
-            CreateBuildConfigResponse buildConfigResponse)
+        private void CreateWebDeployPackStep(CreateSpaBuildProject request, CreateBuildConfigResponse buildConfigResponse)
         {
-            var createWebDeployPackStep = TeamCityClient.CreateBuildStep(
-               TeamCityRequestBuilder.GetWebDeployPackStep(buildConfigResponse.Id, request.WorkingDirectory));
-            return createWebDeployPackStep;
+            TeamCityClient.CreateBuildStep(
+                TeamCityRequestBuilder.GetWebDeployPackStep(buildConfigResponse.Id, request.WorkingDirectory));
         }
 
-        private CreateBuildStepResponse CreateWebDeployPushStep(CreateSpaBuildProject request,
-            CreateBuildConfigResponse buildConfigResponse)
+        private void CreateWebDeployPushStep(CreateSpaBuildProject request, CreateBuildConfigResponse buildConfigResponse)
         {
-            var createWebDeployPushStep = TeamCityClient.CreateBuildStep(
-               TeamCityRequestBuilder.GetWebDeployPush(buildConfigResponse.Id, request.WorkingDirectory,request.Name,"localhost"));
-            return createWebDeployPushStep;
+            TeamCityClient.CreateBuildStep(
+                TeamCityRequestBuilder.GetWebDeployPush(buildConfigResponse.Id, request.WorkingDirectory));
         }
 
-        private CreateVcsRootResponse CreateVcsRoot(CreateSpaBuildProject request, CreateProjectResponse createProjResponse,
+        private CreateVcsRootResponse CreateVcsRoot(CreateSpaBuildProject request,
+            CreateProjectResponse createProjResponse,
             string gitHubToken)
         {
             var createVcs = TeamCityRequestBuilder.GetCreateVcsRootRequest(
@@ -349,7 +324,7 @@ namespace CIWizard.ServiceInterface
         {
             if (Request.Files == null || Request.Files.Length == 0)
             {
-                throw new HttpError(HttpStatusCode.BadRequest,"MissingFile");
+                throw new HttpError(HttpStatusCode.BadRequest, "MissingFile");
             }
             var uploadedFile = Request.Files[0];
             // Thanks IE...
@@ -358,10 +333,11 @@ namespace CIWizard.ServiceInterface
                 : uploadedFile.FileName;
             var filePath = "{0}{1}\\{2}\\{3}".Fmt(
                 AppSettings.GetString("ApplicationSettingsBaseFolder"),
-                request.OwnerName, 
+                request.OwnerName,
                 request.RepositoryName,
                 fileName);
-            Log.Info("Application settings creation.\n\n Path: {0}\nFile size:{1}".Fmt(filePath, uploadedFile.ContentLength));
+            Log.Info("Application settings creation.\n\n Path: {0}\nFile size:{1}".Fmt(filePath,
+                uploadedFile.ContentLength));
             var dir = Path.GetDirectoryName(filePath);
             if (dir != null && !Directory.Exists(dir))
             {

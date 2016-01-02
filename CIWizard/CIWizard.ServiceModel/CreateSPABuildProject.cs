@@ -21,6 +21,8 @@ namespace CIWizard.ServiceModel
         public string ProjectName { get; set; }
 
         public string HostName { get; set; }
+        public bool LocalOnlyApp { get; set; }
+        public int Port { get; set; }
     }
 
     public class CreateSpaBuildProjectResponse
