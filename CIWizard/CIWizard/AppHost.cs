@@ -35,7 +35,8 @@ namespace CIWizard
                 ? (IAppSettings)new TextFileSettings(customSettings.FullName)
                 : new AppSettings();
 
-            LicenseUtils.RegisterLicense(AppSettings.GetString("ServiceStackLicense"));
+            if (AppSettings.Exists("ServiceStackLicense"))
+                LicenseUtils.RegisterLicense(AppSettings.GetString("ServiceStackLicense"));
         }
 
         /// <summary>
