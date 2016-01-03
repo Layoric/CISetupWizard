@@ -45,8 +45,7 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <!--<li ng-class="{ active: IsRouteActive('/stacks')}"><a href="/stacks">Repositories</a></li>-->
-                    <!--<li ng-class="{ active: IsRouteActive('/tech')}"><a href="/tech">Applications</a></li>-->
+
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li ng-show="isAuthenticated"><a href="/auth/logout">Logout</a></li>
@@ -54,8 +53,8 @@
             </div><!--/.nav-collapse -->
         </div>
     </div>
-    <div class="container">
-        <ci-breadcrumbs></ci-breadcrumbs>
+    <div class="container" ng-controller="breadcrumbsCtrl">
+        <ci-breadcrumbs crumbs="breadcrumbs"></ci-breadcrumbs>
     </div>
     <div class="container" ng-view></div>
     <!-- build:js lib/js/angular.js -->

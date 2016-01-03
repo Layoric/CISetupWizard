@@ -1,5 +1,6 @@
 <div>
     <ol class="breadcrumb">
         <li ng-class="{ active: IsRouteActive('/')}"><a href="#/">Home</a></li>
+        <li ng-repeat="crumb in crumbs" ng-bind="crumb.name"></li>
     </ol>
 </div>
