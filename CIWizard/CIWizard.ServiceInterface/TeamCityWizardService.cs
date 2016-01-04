@@ -57,7 +57,7 @@ namespace CIWizard.ServiceInterface
                         .CreateTeamCityBuildParameter(buildConfigResponse.Id, "ss.msdeploy.serverAddress", "localhost",
                             "text validationMode='any' display='normal'"),
                     TeamCityRequestBuilder
-                        .CreateTeamCityBuildParameter(buildConfigResponse.Id, "ss.msdeploy.iisApp", request.Name,
+                        .CreateTeamCityBuildParameter(buildConfigResponse.Id, "ss.msdeploy.iisApp", "{0}_{1}".Fmt(request.OwnerName, request.Name),
                             "text validationMode='any' display='normal'")
                 }
             });

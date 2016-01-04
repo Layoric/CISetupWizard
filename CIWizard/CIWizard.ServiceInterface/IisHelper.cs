@@ -36,7 +36,7 @@ namespace CIWizard.ServiceInterface
 
                 sm.CommitChanges();
 
-                AddMsDeployAccessToSite(sm, siteName, "wizard_deploy");
+                AddMsDeployAccessToSite(sm, siteName, "CISetupWizard");
             }
         }
 
@@ -66,7 +66,7 @@ namespace CIWizard.ServiceInterface
 
                 sm.CommitChanges();
 
-                AddMsDeployAccessToSite(sm, siteName, "wizard_deploy");
+                AddMsDeployAccessToSite(sm, siteName, "CISetupWizard");
             }
         }
 
