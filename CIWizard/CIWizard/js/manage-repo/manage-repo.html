@@ -11,9 +11,12 @@
     </div>
     <br />
     <div class="pull-right">
+
         <div class="checkbox-inline">
-            <input type="checkbox" id="deleteTcProjCheckbox" ng-model="proj.enableDelete"/><label for="deleteTcProjCheckbox">Delete</label>
+            <label for="deleteTcProjCheckbox"><input type="checkbox" id="deleteTcProjCheckbox" ng-model="proj.enableDelete"/>Delete</label>
         </div>
+
+
         <br />
         <button type="button" class="btn btn-danger" ng-disabled="!proj.enableDelete || !projectExists" ng-click="deleteBuild()">Delete TeamCity Project</button>
     </div>

@@ -99,6 +99,20 @@ namespace CIWizard.ServiceInterface
             TeamCityClient.DeleteProject(new DeleteProject {Locator = "id:" + request.ProjectId});
         }
 
+        public void Delete(DeleteAppFile request)
+        {
+            List<string> files = new List<string>();
+            DirectoryInfo projectFolder =
+                new DirectoryInfo("{0}{1}\\{2}\\".Fmt(AppSettings.GetString("ApplicationSettingsBaseFolder"),
+                    request.OwnerName, request.RepositoryName));
+            if (projectFolder.Exists)
+            {
+                string filePath = Path.Combine(projectFolder.FullName, request.FileName);
+                if (File.Exists(filePath))
+                    File.Delete(filePath);
+            }
+        }
+
         public GetTeamCityUrlResponse Get(GetTeamCityUrl request)
         {
             return new GetTeamCityUrlResponse

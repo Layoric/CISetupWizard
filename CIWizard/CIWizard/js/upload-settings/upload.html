@@ -9,10 +9,23 @@
     <div class="text-danger" ng-show="!hasAppSettings">
         Missing required `appsettings.txt`.
     </div>
+    <br />
     <div>
-        <h4>All files</h4>
-        <ul>
-            <li ng-repeat="file in files">{{file}}</li>
-        </ul>
+        <div>
+            <h4>Application Files</h4>
+        </div>
+        <div class="pull-right">
+            <div class="checkbox-inline">
+                <label for="enableDeleteFiles"><input type="checkbox" ng-model="allowDelete" id="enableDeleteFiles" />Delete</label>
+            </div>
+        </div>
+        <table class="table">
+            <tbody>
+                <tr ng-repeat="file in files">
+                    <td ng-bind="file" class="col-md-11"></td>
+                    <td class="col-md-1"><button type="button" ng-click="deleteFile(file)" class="btn btn-danger" ng-disabled="!allowDelete">Delete</button></td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>

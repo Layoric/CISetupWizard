@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CreateSPABuildProject.cs" />
+    <Compile Include="DeleteAppFile.cs" />
     <Compile Include="DeleteTeamCityProject.cs" />
     <Compile Include="GetApplicationSettingsFiles.cs" />
     <Compile Include="GetBuildStatus.cs" />
