@@ -32,9 +32,9 @@ namespace CIWizard.ServiceInterface
             try
             {
                 if(!request.LocalOnlyApp)
-                    IisHelper.AddSite(request.Name, request.HostName);
+                    IisHelper.AddSite("{0}_{1}".Fmt(request.OwnerName,request.Name), request.HostName);
                 else
-                    IisHelper.AddLocalOnlySite(request.Name, request.Port);
+                    IisHelper.AddLocalOnlySite("{0}_{1}".Fmt(request.OwnerName, request.Name), request.Port);
             }
             catch (Exception e)
             {
