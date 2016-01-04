@@ -32,9 +32,9 @@ namespace CIWizard.ServiceInterface
             try
             {
                 if(!request.LocalOnlyApp)
-                    IisHelper.AddSite("{0}_{1}".Fmt(request.OwnerName,request.Name), request.HostName);
+                    IisHelper.AddSite(request.Name, request.HostName);
                 else
-                    IisHelper.AddLocalOnlySite("{0}_{1}".Fmt(request.OwnerName, request.Name), request.Port);
+                    IisHelper.AddLocalOnlySite(request.Name, request.Port);
             }
             catch (Exception e)
             {
@@ -57,7 +57,7 @@ namespace CIWizard.ServiceInterface
                         .CreateTeamCityBuildParameter(buildConfigResponse.Id, "ss.msdeploy.serverAddress", "localhost",
                             "text validationMode='any' display='normal'"),
                     TeamCityRequestBuilder
-                        .CreateTeamCityBuildParameter(buildConfigResponse.Id, "ss.msdeploy.iisApp", "{0}_{1}".Fmt(request.OwnerName, request.Name),
+                        .CreateTeamCityBuildParameter(buildConfigResponse.Id, "ss.msdeploy.iisApp", request.Name,
                             "text validationMode='any' display='normal'")
                 }
             });

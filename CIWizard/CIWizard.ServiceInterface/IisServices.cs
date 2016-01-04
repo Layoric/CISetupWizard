@@ -15,7 +15,7 @@ namespace CIWizard.ServiceInterface
             var result = new GetIisSiteSettingsResponse();
             using (var sm = new ServerManager())
             {
-                var site = sm.Sites["{0}_{1}".Fmt(request.OwnerName, request.RepoName)];
+                var site = sm.Sites[request.RepoName];
                 if (site == null)
                     throw HttpError.NotFound("SiteNotFound");
 
