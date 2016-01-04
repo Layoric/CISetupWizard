@@ -5,18 +5,16 @@
     <div ng-show="ready">
         <h2 style="display:inline-block"><a ng-href="{{tcProjectUrl}}" target="_blank" title="Open in TeamCity">{{repo.name}}</a></h2>
         <h5 ng-bind="repo.description"></h5>
+        <h5><a ng-href="{{'http://' + iisHostName + '/'}}">{{iisHostName}}</a></h5>
         <div ng-if="ownerName && repoName">
             <upload-settings owner-name="ownerName" repo-name="repoName" has-app-settings="hasAppSettings"></upload-settings>
         </div>
     </div>
     <br />
     <div class="pull-right">
-
         <div class="checkbox-inline">
             <label for="deleteTcProjCheckbox"><input type="checkbox" id="deleteTcProjCheckbox" ng-model="proj.enableDelete"/>Delete</label>
         </div>
-
-
         <br />
         <button type="button" class="btn btn-danger" ng-disabled="!proj.enableDelete || !projectExists" ng-click="deleteBuild()">Delete TeamCity Project</button>
     </div>

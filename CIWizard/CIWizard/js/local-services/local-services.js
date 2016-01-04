@@ -46,6 +46,9 @@
                 },
                 getTeamCityUrl: function () {
                     return $http.get('/teamcity/url');
+                },
+                getIisSettings: function (owner, repoName) {
+                    return $http.get('/user/projects/' + owner + '/' + repoName + '/iis');
                 }
             }
         }

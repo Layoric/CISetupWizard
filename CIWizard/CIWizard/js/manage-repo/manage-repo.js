@@ -41,6 +41,10 @@
 
             localServices.getTeamCityUrl().then(function (response) {
                 $scope.tcProjectUrl = response.data.url + 'admin/editProject.html?projectId=SS_' + $routeParams.ownerName + '_' + $routeParams.repoName;
-            })
+            });
+
+            localServices.getIisSettings($routeParams.ownerName,$routeParams.repoName).then(function (response) {
+                $scope.iisHostName = response.data.host;
+            });
         }]);
 })();

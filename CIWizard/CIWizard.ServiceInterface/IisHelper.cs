@@ -27,10 +27,12 @@ namespace CIWizard.ServiceInterface
                 {
                     Directory.CreateDirectory(path);
                 }
+
+                // Set HostName info for binding
                 var site = hostName != null ? sm.Sites.Add(siteName, "http", "*:80:{0}".Fmt(hostName), path) : sm.Sites.Add(siteName, path, 80);
                 site.ServerAutoStart = true;
                 site.ApplicationDefaults.ApplicationPoolName = appPool.Name;
-                // Set HostName info for binding
+                
 
                 sm.CommitChanges();
 
@@ -61,7 +63,6 @@ namespace CIWizard.ServiceInterface
                 var site = sm.Sites.Add(siteName, path, port);
                 site.ServerAutoStart = true;
                 site.ApplicationDefaults.ApplicationPoolName = appPool.Name;
-                // Set HostName info for binding
 
                 sm.CommitChanges();
 
