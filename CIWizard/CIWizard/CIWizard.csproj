@@ -100,6 +100,7 @@
     <Content Include="css\app.css" />
     <Content Include="gruntfile.js" />
     <Content Include="default.html" />
+    <Content Include="img\favicon.png" />
     <Content Include="img\github_normal.png" />
     <Content Include="img\Loading_icon.gif" />
     <Content Include="img\Octocat.jpg" />
