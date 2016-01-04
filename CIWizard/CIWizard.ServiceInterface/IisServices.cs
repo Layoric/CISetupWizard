@@ -22,10 +22,9 @@ namespace CIWizard.ServiceInterface
                 if (site.Bindings.Count > 0)
                 {
                     var binding = site.Bindings.First();
-                    result.Host = binding.Host == "/" ? 
-                        "localhost:{0}".Fmt(binding.EndPoint.Port) : 
-                        binding.Host;
-                    result.BindingInfo = binding.BindingInformation;
+                    string bi = binding.BindingInformation;
+                    result.BindingInfo = bi;
+                    result.Host = bi.Substring(bi.LastIndexOf(":", StringComparison.Ordinal) + 1);
                 }
             }
             return result;
