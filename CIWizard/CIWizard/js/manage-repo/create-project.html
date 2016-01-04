@@ -56,11 +56,11 @@
             ng-disabled="!(!creating && !projectExists && isValidRepository && (repoConfig.hostName || (repoConfig.localOnlyApp && repoConfig.port)) && hasAppSettings && !success)"
             ng-click="createBuild()">Create TeamCity Project</button>
 
-    <div ng-show="ready && success">
-        <div class="alert alert-success" role="alert">
-            <span class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span>
-            <span class="sr-only">Success:</span>
-            TeamCity config created successfully!
-        </div>
+</div>
+<div ng-show="ready && success" style="margin-bottom: 15px">
+    <div class="alert alert-success" role="alert">
+        <span class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span>
+        <span class="sr-only">Success:</span>
+        TeamCity config created successfully!
     </div>
 </div>
