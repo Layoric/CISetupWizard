@@ -6,8 +6,8 @@
         'ciwizard.files'
     ]);
 
-    module.controller('managerRepoCtrl', ['$scope', '$routeParams', 'localServices',
-        function ($scope, $routeParams, localServices) {
+    module.controller('managerRepoCtrl', ['$scope', '$routeParams', 'localServices','$location','$timeout',
+        function ($scope, $routeParams, localServices,$location,$timeout) {
             $scope.loadingUserRepo = true;
             $scope.loadingSolutionDetails = true;
             $scope.ready = false;
@@ -33,6 +33,9 @@
             $scope.deleteBuild = function () {
                 localServices.deleteTeamCityBuild($routeParams.ownerName,$routeParams.repoName).then(function (response) {
                     $scope.projectExists = false;
+                    $timeout(function () {
+                        $location.path('/');
+                    },1000);
                 })
             };
 
