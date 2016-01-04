@@ -65,7 +65,7 @@
                     $scope.success = true;
                     $scope.creating = false;
                     $timeout(function () {
-                        $location.path('/manage/' + $routeParams.ownerName + '/' + $routeParams.repoName);
+                        //$location.path('/manage/' + $routeParams.ownerName + '/' + $routeParams.repoName);
                     },2000);
                 }, function (response) {
                     $scope.creating = false;
